@@ -15,10 +15,16 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = SubCategorySerializer()
     class Meta:
         model = Product
-        fields = ('id', 'name_uz', 'name_ru', 'price', 'count', 'weight', 'category', 'subcategory', 'product_type_uz', 'product_type_ru', 'control_uz', 'control_ru', 'purpose_uz', 'purpose_ru', 'material_uz', 'material_ru', 'xususiyatlari_uz', 'xususiyatlari_ru', 'brand_uz', 'brand_ru', 'sotuvchi_uz', 'sotuvchi_ru', 'description_uz', 'description_ru')
-
+        # fields = ('id', 'name_uz', 'name_ru', 'price', 'count', 'weight', 'category', 'category', 'product_type_uz', 'product_type_ru', 'control_uz', 'control_ru', 'purpose_uz', 'purpose_ru', 'material_uz', 'material_ru', 'xususiyatlari_uz', 'xususiyatlari_ru', 'brand_uz', 'brand_ru', 'sotuvchi_uz', 'sotuvchi_ru', 'description_uz', 'description_ru')
+        fields = '__all__'
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['likes'] = None
+        return data
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:

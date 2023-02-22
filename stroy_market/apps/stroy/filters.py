@@ -5,24 +5,26 @@ from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size
 class ProductFilter(filters.FilterSet):
     category = filters.CharFilter(field_name='category__category__slug')
     subcategory = filters.CharFilter(field_name='subcategory__slug')
-    popular = filters.BooleanFilter(method_name='popular')
-    latest = filters.BooleanFilter(method_name='latest')
+    view = filters.BooleanFilter(method='popular')
+    count = filters.BooleanFilter(method='latest')
 
     class Meta:
         model = Product
-        fields = ['category', 'subcategory', 'popular', 'latest']
+        fields = ['category', 'subcategory', 'view', 'count']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filters['category'].label = 'Kategoriya'
         self.filters['subcategory'].label = 'Sub kategoriya'
-        self.filters['popular'].label = 'Mashhur'
-        self.filters['latest'].label = 'Yangi'
+        self.filters['view'].label = 'Mashhur'
+        self.filters['count'].label = 'Recommended'
     
     def popular(self, queryset, name, value):
         if value:
-            return queryset.order_by('-count')
-        return queryset.order_by('count')
+            return queryset.order_by('-views')
+        elif value == False:
+            return queryset.order_by('views')
+        return queryset
 
     def latest(self, queryset, name, value):
         if value:

@@ -64,6 +64,12 @@ class Product(models.Model):
     brand = models.CharField(max_length=125)
     sotuvchi = models.CharField(max_length=125)
     description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    views = models.PositiveIntegerField()
+
+    @property
+    def like_count(self):
+        return self.likes.count()
 
 
 class ProductImage(models.Model):

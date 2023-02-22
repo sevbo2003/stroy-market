@@ -3,7 +3,11 @@ from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size
 from modeltranslation.admin import TranslationAdmin
 
 
+class SubCategoryInline(admin.TabularInline):
+    model = SubCategory
+
 class CategoryAdmin(TranslationAdmin):
+    inlines = [SubCategoryInline]
     list_display = ('name_uz', 'name_ru', 'slug', 'image')
     search_fields = ('name',)
     readonly_fields = ('slug',)
@@ -18,8 +22,20 @@ class SubCategoryAdmin(TranslationAdmin):
 
 admin.site.register(SubCategory, SubCategoryAdmin)
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+
+
+class SizeInline(admin.TabularInline):
+    model = Size
+
+
+class ColorInline(admin.TabularInline):
+    model = Color
+
 
 class ProductAdmin(TranslationAdmin):
+    inlines = [ProductImageInline, ColorInline, SizeInline]
     list_display = ('name', 'price', 'count', 'weight', 'category')
     search_fields = ('name',)
 
