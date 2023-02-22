@@ -13,9 +13,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny]
 
-    @action(detail=False, methods=['get'])
+    @action(detail=True, methods=['get'])
     def get_subcategories(self, request):
-        queryset = SubCategory.objects.all()
+        category = self.get_object()
+        queryset = SubCategory.objects.filter(category=category)
         serializer = SubCategorySerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
