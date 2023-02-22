@@ -6,7 +6,7 @@ from django.utils.text import slugify
 class Category(models.Model):
     name = models.CharField(max_length=125, verbose_name=_('Category name'))
     image = models.ImageField(upload_to='category')
-    slug = models.SlugField(max_length=125, unique=True)
+    slug = models.SlugField(max_length=125, unique=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -26,6 +26,7 @@ class SubCategory(models.Model):
     name = models.CharField(max_length=125, verbose_name=_('SubCategory name'))
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='category')
+    slug = models.SlugField(max_length=125, unique=True, blank=True, null=True)
 
     def __str__(self):
         return self.name

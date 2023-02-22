@@ -28,6 +28,8 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',') if os.getenv('ALLOWED
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +43,6 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'rest_framework',
-    'modeltranslation',
 
     # Local apps
     'apps.authentication',
@@ -134,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/0.1.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uz-uz'
 
 TIME_ZONE = os.getenv('TIME_ZONE', 'Asia/Tashkent')
 
@@ -194,13 +195,13 @@ SIMPLE_JWT = {
 }
 
 
-LANGUAGES = [
-    ('ru', 'Russian'),
-    ('uz', 'Uzbek'),
-]
-LANGUAGE_CODE = 'UZ'
-
+gettext = lambda s: s
+LANGUAGES = (
+    ('uz', gettext('Uzbek')),
+    ('ru', gettext('Russian'))
+)
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
+MODELTRANSLATION_LANGUAGES = ('uz', 'ru')
 
 # Application definitions
 
