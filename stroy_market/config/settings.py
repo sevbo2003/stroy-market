@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'rest_framework',
+    'modeltranslation',
 
     # Local apps
     'apps.authentication',
@@ -192,6 +193,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+
+LANGUAGES = [
+    ('ru', 'Russian'),
+    ('uz', 'Uzbek'),
+]
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
 
 # Application definitions
 
