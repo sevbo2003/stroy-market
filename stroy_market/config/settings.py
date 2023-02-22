@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Local apps
+    'apps.authentication',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +61,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+AUTH_USER_MODEL = 'authentication.User'
 
 TEMPLATES = [
     {
