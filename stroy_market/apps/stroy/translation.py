@@ -29,4 +29,6 @@ translator.register(Size, SizeTranslationOptions)
 
 class ColorTranslationOptions(TranslationOptions):
     fields = ('name',)
-    
+
+
+translator.register(Color, ColorTranslationOptions)
