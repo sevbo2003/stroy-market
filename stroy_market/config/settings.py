@@ -198,6 +198,7 @@ LANGUAGES = [
     ('ru', 'Russian'),
     ('uz', 'Uzbek'),
 ]
+LANGUAGE_CODE = 'UZ'
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
 
