@@ -1,0 +1,12 @@
+Django
+django-filter
+python-dotenv
+django-cors-headers
+django-extensions
+django-crispy-forms
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg
+coreapi
+packaging
+smart-getenv
