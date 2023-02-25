@@ -131,3 +131,17 @@ class ProductComment(models.Model):
         ordering = ('-created_at',)
         verbose_name = _('ProductComment')
         verbose_name_plural = _('Product Comments') 
+
+
+class CommentLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.ForeignKey('ProductComment', on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    dislike = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username + ' ' + self.comment.product.name + ' ' + str(self.like) + ' ' + str(self.dislike)
+
+    class Meta:
+        verbose_name = _('Comment Like')
+        verbose_name_plural = _('Comment Likes')
