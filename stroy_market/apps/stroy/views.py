@@ -89,3 +89,13 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save(user=request.user, product_id=pk)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=['get'])
+    def get_comments(self, request, pk=None):
+        product = self.get_object()
+        queryset = product.productcomment_set.all()
+        serializer = ProductCommentSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
