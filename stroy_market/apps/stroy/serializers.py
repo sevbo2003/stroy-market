@@ -14,18 +14,6 @@ class SubCategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name_uz', 'name_ru', 'slug', 'image', 'category')
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    category = SubCategorySerializer()
-    class Meta:
-        model = Product
-        # fields = ('id', 'name_uz', 'name_ru', 'price', 'count', 'weight', 'category', 'category', 'product_type_uz', 'product_type_ru', 'control_uz', 'control_ru', 'purpose_uz', 'purpose_ru', 'material_uz', 'material_ru', 'xususiyatlari_uz', 'xususiyatlari_ru', 'brand_uz', 'brand_ru', 'sotuvchi_uz', 'sotuvchi_ru', 'description_uz', 'description_ru')
-        fields = '__all__'
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['likes'] = None
-        return data
-
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
@@ -43,3 +31,34 @@ class ColorSerializer(serializers.ModelSerializer):
         model = Color
         fields = ('id', 'name_uz', 'name_ru', 'product')
 
+
+class ProductSerializer(serializers.ModelSerializer):
+    category = SubCategorySerializer()
+    images = serializers.SerializerMethodField()
+    sizes = serializers.SerializerMethodField()
+    colors = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'price_with_discount', 'in_discount', 'discount_percent', 'category', 'count', 'weight', 'product_type', 'images', 'sizes', 'colors', 'control', 'purpose', 'material', 'xususiyatlari', 'brand', 'sotuvchi', 'description', 'views', 'like_count', 'created_at']
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['likes'] = None
+        return data
+
+    def get_images(self, obj):
+        queryset = obj.productimage_set.all()
+        serializer = ProductImageSerializer(queryset, many=True)
+        return serializer.data
+
+    def get_sizes(self, obj):
+        queryset = obj.size_set.all()
+        serializer = SizeSerializer(queryset, many=True)
+        return serializer.data
+    
+    def get_colors(self, obj):
+        queryset = obj.color_set.all()
+        serializer = ColorSerializer(queryset, many=True)
+        return serializer.data
+    
