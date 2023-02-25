@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -62,3 +62,10 @@ class ColorAdmin(TranslationAdmin):
 
 
 admin.site.register(Color, ColorAdmin)
+
+
+class ProductCommentAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'comment', 'stars', 'created_at')
+
+
+admin.site.register(ProductComment, ProductCommentAdmin)
