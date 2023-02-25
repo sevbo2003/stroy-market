@@ -74,7 +74,7 @@ class Product(models.Model):
         return self.likes.count()
     
     @property
-    def real_price(self):
+    def price_with_discount(self):
         if self.in_discount:
             return self.price - self.price * float(self.discount_percent)
         return self.price
