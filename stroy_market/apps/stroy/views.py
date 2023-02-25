@@ -4,8 +4,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, SizeSerializer, ColorSerializer
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -57,7 +57,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
-    http_method_names = ['get', 'head', 'options']
+    http_method_names = ['post', 'get', 'head', 'options']
 
     def retrieve(self, request, *args, **kwargs):
         saved_products = request.session.get('saved_products', [])
@@ -71,8 +71,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         product_data = serializer.data
         similar_products = Product.objects.filter(category=instance.category).exclude(id=instance.id)[:6]
         you_may_like = Product.objects.filter(category__category=instance.category.category).exclude(id=instance.id).order_by('-created_at')[:6]
-        similar_products_data = ProductSerializer(similar_products).data
-        you_may_like_data = ProductSerializer(you_may_like).data
+        similar_products_data = ProductSerializer(similar_products, many=True).data
+        you_may_like_data = ProductSerializer(you_may_like, many=True).data
         return Response(
             {
                 "product": product_data,
@@ -81,3 +81,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK
         )
+
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        serializer = ProductCommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, product_id=pk)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
