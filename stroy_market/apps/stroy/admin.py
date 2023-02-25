@@ -36,7 +36,7 @@ class ColorInline(admin.TabularInline):
 
 class ProductAdmin(TranslationAdmin):
     inlines = [ProductImageInline, ColorInline, SizeInline]
-    list_display = ('name', 'price', 'count', 'weight', 'category')
+    list_display = ('name', 'in_discount', 'discount_percent', 'price', 'count', 'weight', 'category')
     search_fields = ('name',)
 
 
