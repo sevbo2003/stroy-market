@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike
 from django.conf import settings
 
 
@@ -74,4 +74,27 @@ class ProductCommentSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['user'] = instance.user.first_name + ' ' + instance.user.last_name
         return data
+    
+
+class CommentLikeSerializer(serializers.ModelSerializer):
+    like = serializers.BooleanField(required=False)
+    dislike = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = CommentLike
+        fields = ('id', 'comment', 'user', 'like', 'dislike')
+        read_only_fields = ('user', 'created_at')
+
+    def create(self, validated_data):
+        like = validated_data.get('like', None)
+        dislike = validated_data.get('dislike', None)
+        if like and dislike:
+            raise serializers.ValidationError('Like and dislike can not be true at the same time')
+        if not like and not dislike:
+            raise serializers.ValidationError('Like or dislike must be true')
+        comment = validated_data.get('comment')
+        user = validated_data.get('user')
+        if CommentLike.objects.filter(comment=comment, user=user).exists():
+            raise serializers.ValidationError('You have already liked or disliked this comment')
+        return super().create(validated_data)
     
