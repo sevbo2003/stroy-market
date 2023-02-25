@@ -154,6 +154,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
 
 MEDIA_URL = '/media/'
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # django-cors-headers
@@ -175,7 +176,7 @@ CORS_ORIGIN_WHITELIST = os.getenv('CORS_ORIGIN_WHITELIST').split(',') if os.gete
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.TokenAuthentication',
     ),
