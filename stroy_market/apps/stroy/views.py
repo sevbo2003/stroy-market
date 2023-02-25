@@ -18,7 +18,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def get_subcategories(self, request):
         category = self.get_object()
-        queryset = SubCategory.objects.filter(category=category)
+        queryset = category.subcategory_set.all()
         serializer = SubCategorySerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
@@ -45,7 +45,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def get_products(self, request):
         subcategory = self.get_object()
-        queryset = Product.objects.filter(subcategory=subcategory)
+        queryset = subcategory.product_set.all()
         serializer = ProductSerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
