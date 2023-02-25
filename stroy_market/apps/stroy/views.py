@@ -63,14 +63,14 @@ class ProductViewSet(viewsets.ModelViewSet):
         saved_products = request.session.get('saved_products', [])
         instance = self.get_object()
         if instance.id not in saved_products:
-            instance.count += 1
+            instance.views += 1
             instance.save()
             saved_products.append(instance.id)
             request.session['saved_products'] = saved_products
         serializer = self.get_serializer(instance)
         product_data = serializer.data
-        similar_products = Product.objects.filter(category=instance.category).exclude(id=instance.id)[:8]
-        you_may_like = Product.objects.filter(category__category=instance.category.category).exclude(id=instance.id).order_by('-created_at')[:8]
+        similar_products = Product.objects.filter(category=instance.category).exclude(id=instance.id)[:6]
+        you_may_like = Product.objects.filter(category__category=instance.category.category).exclude(id=instance.id).order_by('-created_at')[:6]
         similar_products_data = ProductSerializer(similar_products).data
         you_may_like_data = ProductSerializer(you_may_like).data
         return Response(
