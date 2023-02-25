@@ -52,6 +52,8 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=125)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    in_discount = models.BooleanField(default=False)
+    discount_percent = models.PositiveIntegerField(null=True, blank=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     count = models.IntegerField()
     weight = models.IntegerField(default=0)
@@ -70,6 +72,12 @@ class Product(models.Model):
     @property
     def like_count(self):
         return self.likes.count()
+    
+    @property
+    def real_price(self):
+        if self.in_discount:
+            return self.price - self.price * float(self.discount_percent)
+        return self.price
 
 
 class ProductImage(models.Model):
