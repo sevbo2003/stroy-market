@@ -12,7 +12,7 @@ from apps.stroy.filters import ProductFilter
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAdminUser]
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'])
@@ -35,11 +35,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def get_permissions(self):
+        if self.action in ['list', 'get_subcategories', 'get_products', 'retrieve']:
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
+    
     
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAdminUser]
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'])
@@ -51,6 +58,13 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def get_permissions(self):
+        if self.action in ['list', 'get_products', 'retrieve']:
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
