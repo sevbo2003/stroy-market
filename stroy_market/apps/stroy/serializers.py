@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem
 from django.conf import settings
+from django.contrib.sessions.models import Session
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -98,5 +99,29 @@ class CommentLikeSerializer(serializers.ModelSerializer):
         user = validated_data.get('user')
         if CommentLike.objects.filter(comment=comment, user=user).exists():
             raise serializers.ValidationError('You have already liked or disliked this comment')
+        return super().create(validated_data)
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = serializers.StringRelatedField()
+    user = serializers.StringRelatedField()
+    quantity = serializers.IntegerField(required=False, default=1)
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'quantity', 'user', 'date_added']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+            return super().create(validated_data)
+        
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        validated_data['session_key'] = session_key
         return super().create(validated_data)
     
