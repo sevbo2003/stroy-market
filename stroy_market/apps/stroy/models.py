@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.sessions.models import Session
+
 
 User = get_user_model()
 
@@ -145,3 +147,17 @@ class CommentLike(models.Model):
     class Meta:
         verbose_name = _('Comment Like')
         verbose_name_plural = _('Comment Likes')
+
+
+class CartItem(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=40, null=True, blank=True)
+    quantity = models.IntegerField(default=1)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.quantity} x {self.product.name}'
+
+    def total_price(self):
+        return self.product.price * self.quantity
