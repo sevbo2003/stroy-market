@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -76,3 +76,10 @@ class CommentLikeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CommentLike, CommentLikeAdmin)
+
+
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'session_key', 'quantity', 'date_added')
+
+
+admin.site.register(CartItem, CartItemAdmin)
