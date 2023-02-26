@@ -4,8 +4,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer, CommentLikeSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -113,3 +113,45 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save(user=request.user, dislike=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+class CartItemViewSet(viewsets.ViewSet):
+    def list(self, request):
+        print("-----------",request.user.is_authenticated)
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        serializer = CartItemSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def create(self, request):
+        product_id = request.data.get('product_id')
+        quantity = request.data.get('quantity')
+
+        if request.user.is_authenticated:
+            cart_item, created = CartItem.objects.get_or_create(
+                user=request.user,
+                product_id=product_id,
+            )
+        else:
+            cart_item, created = CartItem.objects.get_or_create(
+                session_key=request.session.session_key,
+                product_id=product_id,
+            )
+        print("created", created)
+        if not created:
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
+
+        cart_item.save()
+
+        serializer = CartItemSerializer(cart_item, context={'request': request})
+
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['delete'])
+    def clear(self, request):
+        queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        queryset.delete()
+        return Response(status=204)
