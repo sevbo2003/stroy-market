@@ -116,7 +116,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class CartItemViewSet(viewsets.ViewSet):
     def list(self, request):
-        print("-----------",request.user.is_authenticated)
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
@@ -138,7 +137,6 @@ class CartItemViewSet(viewsets.ViewSet):
                 session_key=request.session.session_key,
                 product_id=product_id,
             )
-        print("created", created)
         if not created:
             cart_item.quantity += quantity
         else:
