@@ -7,6 +7,8 @@ django-crispy-forms
 djangorestframework
 djangorestframework-simplejwt
 django-modeltranslation==0.18.9
+celery==5.2.7
+redis==4.5.1
 eskiz_sms
 drf-yasg
 coreapi
