@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -83,3 +83,6 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CartItem, CartItemAdmin)
+
+
+admin.site.register(ProductLike)

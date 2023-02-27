@@ -3,8 +3,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -166,3 +166,31 @@ class CartItemViewSet(viewsets.ViewSet):
         queryset = CartItem.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
+
+
+class ProductLikeViewSet(viewsets.ViewSet):
+    def post(self, request, pk=None):
+        product = Product.objects.get(id=pk)
+        if request.user.is_authenticated:
+            product_like, created = ProductLike.objects.get_or_create(
+                user=request.user,
+                product=product
+            )
+        else:
+            product_like, created = ProductLike.objects.get_or_create(
+                session_key=request.session.session_key,
+                product=product
+            )
+        if not created:
+            product_like.delete()
+        else:
+            product_like.save()
+        return Response(status=status.HTTP_200_OK)
+    
+    def list(self, request):
+        if request.user.is_authenticated:
+            queryset = ProductLike.objects.filter(user=request.user)
+        else:
+            queryset = ProductLike.objects.filter(session_key=request.session.session_key)
+        serializer = ProductLikeSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)

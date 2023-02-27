@@ -166,3 +166,17 @@ class CartItem(models.Model):
 
     def total_price(self):
         return self.product.price * self.quantity
+
+
+class ProductLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=40, null=True, blank=True)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.product
+
+    class Meta:
+        verbose_name = _('Saqlangan mahsulot')
+        verbose_name_plural = _('Saqlangan mahsulotlar')
+        

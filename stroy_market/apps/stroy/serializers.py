@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
@@ -111,6 +111,26 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = ['id', 'product', 'quantity', 'user', 'date_added']
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+            return super().create(validated_data)
+        
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        validated_data['session_key'] = session_key
+        return super().create(validated_data)
+
+
+class ProductLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductLike
+        fields = ("id", "user", "session_key", "product")
+    
     def create(self, validated_data):
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
