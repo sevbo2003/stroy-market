@@ -1,3 +1,21 @@
 from django.contrib import admin
+from apps.stroy.shipping.models import Order, OrderItem, OrderAddress
 
-# Register your models here.
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
+
+class OrderAddressInline(admin.TabularInline):
+    model = OrderAddress
+    extra = 0
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'status', 'created_at', 'updated_at')
+    list_filter = ('status',)
+    inlines = [OrderItemInline, OrderAddressInline]
+
+
+admin.site.register(Order, OrderAdmin)
