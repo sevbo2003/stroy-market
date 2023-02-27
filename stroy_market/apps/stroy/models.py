@@ -81,7 +81,12 @@ class Product(models.Model):
 
     @property
     def avarage_rating(self):
-        return self.rating / self.comments
+        if self.rating == 0:
+            return 0
+        if self.comments == 0:
+            return 0
+        else:
+            return self.rating / self.comments
 
     def __str__(self):
         return self.name
