@@ -207,6 +207,9 @@ MODELTRANSLATION_LANGUAGES = ('uz', 'ru')
 
 DELIVERY_COST = os.getenv('DELIVERY_COST', 0)
 
+ESKIZ_EMAIL=os.getenv('ESKIZ_EMAIL')
+ESKIZ_PASSWORD=os.getenv('ESKIZ_PASSWORD')
+
 # Application definitions
 
 APP_VERSION = '1.0.0'
