@@ -20,6 +20,8 @@ def verify_token(phone_number, token):
     try:
         phone_token = PhoneToken.objects.filter(phone_number=phone_number).last()
         if phone_token.token == token and phone_token.expires_at > timezone.now():
+            phone_token.is_verified = True
+            phone_token.save()
             return True
         return False
     except PhoneToken.DoesNotExist:
