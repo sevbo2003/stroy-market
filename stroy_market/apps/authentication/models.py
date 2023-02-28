@@ -13,7 +13,10 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=150, null=True, blank=True)
     
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        try:
+            return self.get_full_name()
+        except:
+            return self.username
     
     def get_full_name(self):
         return self.first_name + ' ' + self.last_name
