@@ -15,6 +15,30 @@ from apps.authentication.tasks import send_background_sms
 from apps.authentication.utils import generate_token, verify_token
 
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+    http_method_names = ['post']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        phone = serializer.validated_data.get('username')
+        number = PhoneToken.objects.filter(phone_number=phone).last()
+        if number:
+            if number.is_verified:
+                user = serializer.save()
+                number.delete()
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                })
+            return Response({'status': 'error', 'message': 'Phone number is not verified'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status': 'error', 'message': 'Phone number is not verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PhoneTokenViewSet(viewsets.ModelViewSet):
     queryset = PhoneToken.objects.all()
     serializer_class = PhoneTokenCreateSerializer
