@@ -13,7 +13,7 @@ def generate_token(phone_number):
     phone_token.save()
     message = "Sizning maxsus kodiz: {}".format(token)
     send_background_sms.apply_async((phone_number, message))
-    return phone_token.token
+    return {"status": "success"}
 
 
 def verify_token(phone_number, token):
