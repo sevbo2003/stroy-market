@@ -35,8 +35,17 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'user', 'status', 'created_at', 'updated_at')
     
-    def update(self, instance, validated_data):
-        instance.status = validated_data.get('status', instance.status)
-        instance.save()
-        return instance
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+            return super().create(validated_data)
+        
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        validated_data['session_key'] = session_key
+        return super().create(validated_data)
     
