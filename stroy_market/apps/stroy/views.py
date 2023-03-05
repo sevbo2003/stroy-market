@@ -39,6 +39,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
     permission_classes = [permissions.IsAdminUser]
+    http_method_names = ['get', 'head', 'options']
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'])
