@@ -192,3 +192,17 @@ class BestProduct(models.Model):
         verbose_name = _('Best product')
         verbose_name_plural = _('Best products')
         ordering = ('-created_at',)
+
+
+class PopularProduct(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name
+
+    class Meta:
+        verbose_name = _('Popular product')
+        verbose_name_plural = _('Popular products')
+        ordering = ('-created_at',)
+        
