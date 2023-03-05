@@ -11,11 +11,11 @@ from apps.stroy.filters import ProductFilter
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAdminUser]
+    http_method_names = ['get', 'head', 'options']
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'])
-    def get_subcategories(self, request):
+    def get_subcategories(self, request, slug=None):
         category = self.get_object()
         queryset = category.subcategory_set.all()
         serializer = SubCategorySerializer(queryset, many=True)
@@ -25,22 +25,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['get'])
-    def get_products(self, request):
-        category = self.get_object()
-        queryset = Product.objects.filter(category__category=category)
+    def get_products(self, request, slug=None):
+        instance = self.get_object()
+        queryset = Product.objects.filter(category__category__slug=slug)
         serializer = ProductSerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_permissions(self):
-        if self.action in ['list', 'get_subcategories', 'get_products', 'retrieve']:
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
-    
     
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
@@ -207,4 +200,3 @@ class PopularProductsViewSet(viewsets.ModelViewSet):
     queryset = PopularProduct.objects.all()
     serializer_class = PopularProductSerializer
     http_method_names = ['get', 'head', 'options']
-    
