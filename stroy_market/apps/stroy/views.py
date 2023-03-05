@@ -185,6 +185,39 @@ class CartItemViewSet(viewsets.ViewSet):
         queryset.delete()
         return Response(status=204)
 
+    @action(detail=False, methods=['get'])
+    def get_total_price(self, request):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        total_price = 0
+        for item in queryset:
+            total_price += item.product.price_with_discount * item.quantity
+        return Response(total_price, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def get_total_quantity(self, request):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        total_quantity = 0
+        for item in queryset:
+            total_quantity += item.quantity
+        return Response(total_quantity, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'])
+    def get_total_weight(self, request):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        total_weight = 0
+        for item in queryset:
+            total_weight += item.product.weight * item.quantity
+        return Response(total_weight, status=status.HTTP_200_OK)
+
 
 class ProductLikeViewSet(viewsets.ViewSet):
     def create(self, request):
