@@ -43,7 +43,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'])
-    def get_products(self, request):
+    def get_products(self, request, slug=None):
         subcategory = self.get_object()
         queryset = subcategory.product_set.all()
         serializer = ProductSerializer(queryset, many=True)
