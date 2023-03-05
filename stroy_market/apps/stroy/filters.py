@@ -3,7 +3,7 @@ from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size
     
 
 class ProductFilter(filters.FilterSet):
-    category = filters.CharFilter(field_name='subcategory__slug')
+    category = filters.CharFilter(field_name='category__slug')
     popular = filters.BooleanFilter(method='filter_popular')
     # rating = filters.BooleanFilter(method='rating', field_name='likes')
     cheaper = filters.BooleanFilter(method='filter_cheaper')
