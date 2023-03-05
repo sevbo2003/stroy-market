@@ -3,8 +3,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductImageSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -195,3 +195,10 @@ class ProductLikeViewSet(viewsets.ViewSet):
             queryset = ProductLike.objects.filter(session_key=request.session.session_key)
         serializer = ProductLikeSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+class BestProductsViewSet(viewsets.ModelViewSet):
+    queryset = BestProduct.objects.all()
+    serializer_class = BestProductSerializer
+    http_method_names = ['get', 'head', 'options']
+    
