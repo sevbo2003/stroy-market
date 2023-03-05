@@ -156,7 +156,10 @@ class CartItemViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['delete'])
     def clear(self, request):
-        queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
 
