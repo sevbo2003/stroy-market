@@ -3,8 +3,7 @@ from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size
     
 
 class ProductFilter(filters.FilterSet):
-    category = filters.CharFilter(field_name='category__category__slug')
-    subcategory = filters.CharFilter(field_name='subcategory__slug')
+    category = filters.CharFilter(field_name='subcategory__slug')
     popular = filters.BooleanFilter(method='filter_popular')
     # rating = filters.BooleanFilter(method='rating', field_name='likes')
     cheaper = filters.BooleanFilter(method='filter_cheaper')
@@ -14,12 +13,11 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['category', 'subcategory', 'popular', 'price_range', 'cheaper', 'expensive', 'in_discount']
+        fields = ['category', 'popular', 'price_range', 'cheaper', 'expensive', 'in_discount']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filters['category'].label = 'Kategoriya'
-        self.filters['subcategory'].label = 'Sub kategoriya'
         self.filters['popular'].label = 'Mashhur'
         # self.filters['rating'].label = 'Rating'
         self.filters['price_range'].label = 'Narx oraligi'
