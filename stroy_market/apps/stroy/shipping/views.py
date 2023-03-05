@@ -54,6 +54,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [permissions.IsAdminUser]
+    http_method_names = ['get', 'post', 'head', 'options']
 
     def get_permissions(self):
         if self.action in ['retrieve', 'create']:
@@ -61,6 +62,30 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAdminUser]
         return [permission() for permission in permission_classes]
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        session_key = request.session.session_key
+        if request.user.is_authenticated:
+            if instance.order.user != request.user:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            if instance.order.session_key != session_key:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(instance)
+        order_item_data = serializer.data
+        return Response(
+            order_item_data,
+            status=status.HTTP_200_OK
+        )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(order__user=self.request.user)
+        else:
+            queryset = queryset.filter(order__session_key=self.request.session.session_key)
+        return queryset
 
 
 class OrderAddressViewSet(viewsets.ModelViewSet):
