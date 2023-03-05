@@ -170,7 +170,8 @@ class CartItemViewSet(viewsets.ViewSet):
 
 class ProductLikeViewSet(viewsets.ViewSet):
     def create(self, request):
-        product = Product.objects.get(id=pk)
+        product_id = request.data.get('product_id')
+        product = Product.objects.get(id=product_id)
         if request.user.is_authenticated:
             product_like, created = ProductLike.objects.get_or_create(
                 user=request.user,
