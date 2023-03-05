@@ -100,4 +100,20 @@ class OrderAddressViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        session_key = request.session.session_key
+        if request.user.is_authenticated:
+            if instance.order.user != request.user:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            if instance.order.session_key != session_key:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(instance)
+        order_address_data = serializer.data
+        return Response(
+            order_address_data,
+            status=status.HTTP_200_OK
+        )
     
