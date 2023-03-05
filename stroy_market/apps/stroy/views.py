@@ -97,6 +97,16 @@ class ProductViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['get'])
+    def get_you_may_like(self, request, pk=None):
+        product = self.get_object()
+        queryset = Product.objects.filter(category__category=product.category.category).exclude(id=product.id).order_by('-created_at')[:6]
+        serializer = ProductSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'])
     def get_comments(self, request, pk=None):
