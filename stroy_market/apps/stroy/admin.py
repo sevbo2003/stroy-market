@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -41,6 +41,12 @@ class ProductAdmin(TranslationAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
+
+class BestProductAdmin(admin.ModelAdmin):
+    list_display = ('product', 'created_at')
+
+
+admin.site.register(BestProduct, BestProductAdmin)
 
 
 class ProductImageAdmin(admin.ModelAdmin):
@@ -86,3 +92,5 @@ admin.site.register(CartItem, CartItemAdmin)
 
 
 admin.site.register(ProductLike)
+
+
