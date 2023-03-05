@@ -75,16 +75,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             request.session['saved_products'] = saved_products
         serializer = self.get_serializer(instance)
         product_data = serializer.data
-        similar_products = Product.objects.filter(category=instance.category).exclude(id=instance.id)[:6]
-        you_may_like = Product.objects.filter(category__category=instance.category.category).exclude(id=instance.id).order_by('-created_at')[:6]
-        similar_products_data = ProductSerializer(similar_products, many=True).data
-        you_may_like_data = ProductSerializer(you_may_like, many=True).data
         return Response(
-            {
-                "product": product_data,
-                "similar_products": similar_products_data,
-                "you_may_like": you_may_like_data
-            },
+            product_data,
             status=status.HTTP_200_OK
         )
 
@@ -140,7 +132,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'get_comments']:
+        if self.action in ['list', 'retrieve', 'get_comments', 'get_similar_products', 'get_you_may_like']:
             permission_classes = [permissions.AllowAny]
         elif self.action in ['add_comment', 'like_comment', 'dislike_comment']:
             permission_classes = [permissions.IsAuthenticated]
