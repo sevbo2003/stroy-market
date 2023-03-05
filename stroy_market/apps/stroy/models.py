@@ -179,4 +179,16 @@ class ProductLike(models.Model):
     class Meta:
         verbose_name = _('Saqlangan mahsulot')
         verbose_name_plural = _('Saqlangan mahsulotlar')
-        
+    
+
+class BestProduct(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name
+
+    class Meta:
+        verbose_name = _('Best product')
+        verbose_name_plural = _('Best products')
+        ordering = ('-created_at',)
