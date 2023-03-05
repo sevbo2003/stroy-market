@@ -88,13 +88,16 @@ class ProductViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
-    @action(detail=True, methods=['post'])
-    def add_comment(self, request, pk=None):
-        serializer = ProductCommentSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, product_id=pk)
+    @action(detail=True, methods=['get'])
+    def get_similar_products(self, request, pk=None):
+        product = self.get_object()
+        queryset = Product.objects.filter(category=product.category).exclude(id=product.id)[:6]
+        serializer = ProductSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     @action(detail=True, methods=['get'])
     def get_comments(self, request, pk=None):
         product = self.get_object()
@@ -103,6 +106,13 @@ class ProductViewSet(viewsets.ModelViewSet):
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        serializer = ProductCommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, product_id=pk)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['post'])
@@ -118,6 +128,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, dislike=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'get_comments']:
+            permission_classes = [permissions.AllowAny]
+        elif self.action in ['add_comment', 'like_comment', 'dislike_comment']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
     
 
 class CartItemViewSet(viewsets.ViewSet):
