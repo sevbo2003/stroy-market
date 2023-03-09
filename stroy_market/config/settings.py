@@ -215,6 +215,7 @@ ESKIZ_EMAIL=os.getenv('ESKIZ_EMAIL')
 ESKIZ_PASSWORD=os.getenv('ESKIZ_PASSWORD')
 
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = False
 
 # Application definitions
 
