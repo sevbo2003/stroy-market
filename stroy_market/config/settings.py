@@ -216,6 +216,10 @@ ESKIZ_PASSWORD=os.getenv('ESKIZ_PASSWORD')
 
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = False
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
+SESSION_COOKIE_SECURE = True
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Application definitions
 
