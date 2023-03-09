@@ -11,9 +11,7 @@ def generate_token(phone_number):
     phone_token.token = token
     phone_token.expires_at = timezone.now() + timezone.timedelta(minutes=3)
     phone_token.save()
-    message = "Sizning maxsus kodiz: {}".format(token)
-    send_background_sms.apply_async((phone_number, message))
-    return {"status": "success"}
+    return token
 
 
 def verify_token(phone_number, token):
