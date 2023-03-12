@@ -8,6 +8,7 @@ def send_news(message):
     try:
         for i in "stroy.models.Newsletter".objects.all():
             eskiz.send_sms(str(i)[1:], message, from_whom='4546')
+        return {"status": "success", "message": "Xabar muvaffaqiyatli yuborildi"}
     except Exception as e:
         return {"status": "error", "message": e}
     
