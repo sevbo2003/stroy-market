@@ -252,4 +252,4 @@ class News(models.Model):
         super(News, self).save(*args, **kwargs)
         message = self.message
         numbers = Newsletter.objects.all().values_list('phone_number', flat=True)
-        send_news.apply_async(args=[message, numbers], countdown=10)
+        send_news.apply_async(args=[numbers, message], countdown=10)
