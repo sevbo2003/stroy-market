@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.stroy.shipping.models import Order, OrderItem, OrderAddress
+from apps.stroy.models import PromoCode
 from django.contrib.auth import get_user_model
 
 
@@ -30,10 +31,20 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
     status = serializers.CharField(required=False)
+    promocode = serializers.CharField(required=False)
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'status', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'status', 'promocode', 'created_at', 'updated_at')
+    
+
+    def validate_promocode(self, value):
+        if value:
+            if not PromoCode.objects.filter(code=value).exists():
+                raise serializers.ValidationError('Promocode topilmadi')
+            if not PromoCode.objects.filter(code=value).first().active:
+                raise serializers.ValidationError('Promocodeni aktivlashtirish muddati tugagan')
+        return value
     
     def create(self, validated_data):
         request = self.context.get('request')
