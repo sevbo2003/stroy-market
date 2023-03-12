@@ -22,7 +22,12 @@ class User(AbstractUser):
         try:
             return self.first_name + ' ' + self.last_name
         except:
-            return self.first_name or self.last_name
+            if self.first_name:
+                return self.first_name
+            elif self.last_name:
+                return self.last_name
+            else:
+                return self.username
         
 
 class PhoneToken(models.Model):
