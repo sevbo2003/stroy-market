@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, PromoCode
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -100,3 +100,8 @@ admin.site.register(CartItem, CartItemAdmin)
 admin.site.register(ProductLike)
 
 
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount', 'start_date', 'end_date', 'active')
+
+
+admin.site.register(PromoCode, PromoCodeAdmin)
