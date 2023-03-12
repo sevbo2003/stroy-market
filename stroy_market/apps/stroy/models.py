@@ -205,4 +205,19 @@ class PopularProduct(models.Model):
         verbose_name = _('Popular product')
         verbose_name_plural = _('Popular products')
         ordering = ('-created_at',)
+    
+
+class PromoCode(models.Model):
+    code = models.CharField(max_length=125)
+    discount = models.PositiveIntegerField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.code
+
+    class Meta:
+        verbose_name = _('Promo code')
+        verbose_name_plural = _('Promo codes')
         

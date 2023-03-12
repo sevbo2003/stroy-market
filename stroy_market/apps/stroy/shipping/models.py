@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from apps.stroy.models import Product, Color, Size
 import uuid
+from apps.stroy.models import PromoCode
 
 
 User = get_user_model()
@@ -21,6 +22,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     session_key = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    promocode = models.ForeignKey(PromoCode, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -36,10 +38,17 @@ class Order(models.Model):
         if self.orderitem_set.exists():
             if self.order_address.exists():
                 if self.order_address.first().delivery == 'free':
-                    return self.orderitem_set.first().total_price(self)
+                    price = self.orderitem_set.first().total_price(self)
+                    if self.promocode:
+                        return price - (price * self.promocode.discount / 100)
                 else:
-                    return self.orderitem_set.first().total_price(self) + int(settings.DELIVERY_COST)
-            return self.orderitem_set.first().total_price(self)
+                    price = self.orderitem_set.first().total_price(self) + int(settings.DELIVERY_COST)
+                    if self.promocode:
+                        return price - (price * self.promocode.discount / 100)
+            price = self.orderitem_set.first().total_price(self)
+            if self.promocode:
+                return price - (price * self.promocode.discount / 100)
+        return None
     
     @property
     def get_total_weight(self):
