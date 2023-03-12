@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, PromoCode
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, PromoCode, Newsletter
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -105,3 +105,10 @@ class PromoCodeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PromoCode, PromoCodeAdmin)
+
+
+class NewsletterAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'created_at')
+
+
+admin.site.register(Newsletter, NewsletterAdmin)
