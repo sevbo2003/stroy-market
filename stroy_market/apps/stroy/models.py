@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.sessions.models import Session
 from apps.authentication.validators import validate_uzb_phone_number
-
+from apps.stroy.tasks import send_news
 
 User = get_user_model()
 
@@ -234,3 +234,22 @@ class Newsletter(models.Model):
     class Meta:
         verbose_name = _('Foydalanuvchi')
         verbose_name_plural = _('Foydalanuvchilar')
+
+
+class News(models.Model):
+    message = models.CharField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message
+    
+    class Meta:
+        verbose_name = _('Xabarnoma')
+        verbose_name_plural = _('Xabarnomalar')
+        ordering = ('-created_at',)
+    
+    def save(self, *args, **kwargs):
+        super(News, self).save(*args, **kwargs)
+        message = self.message
+        numbers = Newsletter.objects.all().values_list('phone_number', flat=True)
+        send_news.apply_async(args=[message, numbers], countdown=10)
