@@ -115,7 +115,7 @@ admin.site.register(Newsletter, NewsletterAdmin)
 
 
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at')
+    list_display = ('message', 'created_at')
 
 
 admin.site.register(News, NewsAdmin)
