@@ -251,4 +251,5 @@ class News(models.Model):
     def save(self, *args, **kwargs):
         super(News, self).save(*args, **kwargs)
         message = self.message
-        send_news.apply_async(args=[message])
+        numbers = list(Newsletter.objects.all().values_list('phone_number', flat=True))
+        send_news.apply_async(args=[numbers, message])
