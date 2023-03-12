@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.sessions.models import Session
+from apps.authentication.validators import validate_uzb_phone_number
 
 
 User = get_user_model()
@@ -220,4 +221,16 @@ class PromoCode(models.Model):
     class Meta:
         verbose_name = _('Promo code')
         verbose_name_plural = _('Promo codes')
-        
+
+
+
+class Newsletter(models.Model):
+    phone_number = models.CharField(max_length=20, validators=[validate_uzb_phone_number])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        verbose_name = _('Foydalanuvchi')
+        verbose_name_plural = _('Foydalanuvchilar')
