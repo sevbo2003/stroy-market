@@ -4,10 +4,13 @@ from apps.authentication.validators import validate_uzb_phone_number
 
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField()
+
     class Meta:
         model = User
-        fields = ['username', 'password', 'first_name', 'last_name']
+        fields = ['username', 'password', 'full_name']
         write_only_fields = ['password', 'username']
+    
 
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -15,7 +18,13 @@ class UserSerializer(serializers.ModelSerializer):
         return data
     
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        full_name = validated_data.pop('full_name')
+        first_name, last_name = full_name.split(' ')
+        if not first_name:
+            first_name = None
+        if not last_name:
+            last_name = None
+        user = User.objects.create(first_name=first_name, last_name=last_name, **validated_data)
         return user
 
 

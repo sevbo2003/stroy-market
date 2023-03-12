@@ -19,8 +19,11 @@ class User(AbstractUser):
             return self.username
     
     def get_full_name(self):
-        return self.first_name + ' ' + self.last_name
-
+        try:
+            return self.first_name + ' ' + self.last_name
+        except:
+            return self.first_name or self.last_name
+        
 
 class PhoneToken(models.Model):
     phone_number = models.CharField(max_length=20, validators=[validate_uzb_phone_number])
