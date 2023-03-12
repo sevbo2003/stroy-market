@@ -3,8 +3,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -286,3 +286,10 @@ class PopularProductsViewSet(viewsets.ModelViewSet):
     queryset = PopularProduct.objects.all()
     serializer_class = PopularProductSerializer
     http_method_names = ['get', 'head', 'options']
+
+
+class NewsletterViewSets(viewsets.ModelViewSet):
+    queryset = Newsletter.objects.all()
+    serializer_class = NewsletterSerializer
+    http_method_names = ['post']
+    
