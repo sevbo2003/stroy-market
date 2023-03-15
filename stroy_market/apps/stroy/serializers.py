@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
@@ -161,6 +161,13 @@ class PopularProductSerializer(serializers.ModelSerializer):
         model = PopularProduct
         fields = ('id', 'product', 'created_at')
 
+
+class RecommendedProductSerializer(serializers.Serializer):
+    product = ProductSerializer()
+
+    class Meta:
+        model = RecommendedProduct
+        fields = ('id', 'product', 'created_at')
 
 class NewsletterSerializer(serializers.ModelSerializer):
     class Meta:

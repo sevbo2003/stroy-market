@@ -208,6 +208,19 @@ class PopularProduct(models.Model):
         ordering = ('-created_at',)
     
 
+class RecommendedProduct(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name
+
+
+    class Meta:
+        verbose_name = _('Recommended produts')
+        verbose_name_plural = _('Recommended products')
+        ordering = ('-created_at',)
+
 class PromoCode(models.Model):
     code = models.CharField(max_length=125)
     discount = models.PositiveIntegerField()
