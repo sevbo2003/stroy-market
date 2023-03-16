@@ -139,6 +139,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save(user=request.user, product_id=pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @action(detail=True, methods=['get'])
+    def get_questions(self, request, pk=None):
+        product = self.get_object()
+        queryset = product.question_set.all()
+        serializer = QuestionSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def get_permissions(self):
         if self.action in ['list', 'retrieve', 'get_comments', 'get_similar_products', 'get_you_may_like']:
