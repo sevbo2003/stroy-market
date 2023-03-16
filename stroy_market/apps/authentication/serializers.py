@@ -18,13 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         return data
     
     def create(self, validated_data):
-        full_name = validated_data.pop('full_name')
-        first_name, last_name = full_name.split(' ')
-        if not first_name:
-            first_name = None
-        if not last_name:
-            last_name = None
-        user = User.objects.create(first_name=first_name, last_name=last_name, **validated_data)
+        user = User.objects.create(**validated_data)
         user.set_password(validated_data.get('password'))
         user.save()
         return user

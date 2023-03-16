@@ -73,7 +73,7 @@ class ProductCommentSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['user'] = instance.user.first_name + ' ' + instance.user.last_name
+        data['user'] = instance.user.full_name
         data['likes'] = instance.commentlike_set.filter(like=True).count()
         data['dislikes'] = instance.commentlike_set.filter(dislike=True).count()
         return data

@@ -9,8 +9,7 @@ from apps.authentication.tasks import send_background_sms
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True, validators=[validate_uzb_phone_number])
-    first_name = models.CharField(max_length=150, null=True, blank=True)
-    last_name = models.CharField(max_length=150, null=True, blank=True)
+    full_name = models.CharField(max_length=70)
     
     def __str__(self):
         try:
@@ -19,15 +18,7 @@ class User(AbstractUser):
             return self.username
     
     def get_full_name(self):
-        try:
-            return self.first_name + ' ' + self.last_name
-        except:
-            if self.first_name:
-                return self.first_name
-            elif self.last_name:
-                return self.last_name
-            else:
-                return self.username
+        return self.full_name
         
 
 class PhoneToken(models.Model):
