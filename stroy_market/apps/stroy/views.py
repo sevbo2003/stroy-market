@@ -3,8 +3,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct, Question
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer, QuestionSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -132,10 +132,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save(user=request.user, dislike=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=['post'])
+    def ask_question(self, request, pk=None):
+        serializer = QuestionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, product_id=pk)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
     def get_permissions(self):
         if self.action in ['list', 'retrieve', 'get_comments', 'get_similar_products', 'get_you_may_like']:
             permission_classes = [permissions.AllowAny]
-        elif self.action in ['add_comment', 'like_comment', 'dislike_comment']:
+        elif self.action in ['add_comment', 'like_comment', 'dislike_comment', 'ask_question']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [permissions.IsAdminUser]
@@ -299,3 +307,4 @@ class NewsletterViewSets(viewsets.ModelViewSet):
     serializer_class = NewsletterSerializer
     http_method_names = ['post']
     
+
