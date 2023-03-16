@@ -266,3 +266,20 @@ class News(models.Model):
         message = self.message
         numbers = list(Newsletter.objects.all().values_list('phone_number', flat=True))
         send_news.apply_async(args=[numbers, message])
+
+
+class Question(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    question = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username + ' ' + self.product.name
+    
+    class Meta:
+        verbose_name = _('Savol')
+        verbose_name_plural = _('Savollar')
+        ordering = ('-created_at',)
+    
