@@ -3,11 +3,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.settings import api_settings
 from apps.authentication.models import User, PhoneToken
 from apps.authentication.serializers import UserSerializer, PhoneTokenCreateSerializer, PhoneTokenVerifySerializer
 from apps.authentication.utils import generate_token, verify_token
