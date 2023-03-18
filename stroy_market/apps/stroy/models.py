@@ -276,10 +276,25 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.username + ' ' + self.product.name
+        return self.user.full_name + ' ' + self.product.name
     
     class Meta:
         verbose_name = _('Savol')
         verbose_name_plural = _('Savollar')
         ordering = ('-created_at',)
     
+
+class Answer(models.Model):
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
+    answer = models.TextField()
+    by_admin = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.question.user.full_name + ' ' + self.question.product.name
+    
+    class Meta:
+        verbose_name = _('Javob')
+        verbose_name_plural = _('Javoblar')
+        ordering = ('-created_at',)

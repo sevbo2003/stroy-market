@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, PromoCode, Newsletter, News, RecommendedProduct, Question
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, PromoCode, Newsletter, News, RecommendedProduct, Question, Answer
 from modeltranslation.admin import TranslationAdmin
 
 
@@ -134,3 +134,12 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Question, QuestionAdmin)
+
+
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('question', 'answer', 'by_admin', 'created_at')
+    list_filter = ('question',)
+    search_fields = ('answer',)
+
+
+admin.site.register(Answer, AnswerAdmin)

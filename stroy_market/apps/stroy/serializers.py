@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct, Question
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct, Question, Answer
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
@@ -186,4 +186,22 @@ class QuestionSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['user'] = instance.user.full_name
         return data
+    
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('id', 'question', 'answer', 'created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at', 'question')
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['question'] = instance.question.question
+        return data
+    
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        if user.is_superuser:
+            return super().create(validated_data)
+        raise serializers.ValidationError('You are not allowed to answer questions')
     

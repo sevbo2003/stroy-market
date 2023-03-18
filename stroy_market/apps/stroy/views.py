@@ -3,8 +3,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct, Question
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer, QuestionSerializer
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer, QuestionSerializer, AnswerSerializer
 from apps.stroy.filters import ProductFilter
 
 
@@ -144,6 +144,23 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = self.get_object()
         queryset = product.question_set.all()
         serializer = QuestionSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def answer_question(self, request, pk=None):
+        serializer = AnswerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(by_admin=request.user, question_id=pk)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=['get'])
+    def get_answers(self, request, pk=None):
+        product = self.get_object()
+        queryset = product.answer_set.all()
+        serializer = AnswerSerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
