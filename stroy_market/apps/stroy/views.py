@@ -320,6 +320,15 @@ class ProductLikeViewSet(viewsets.ViewSet):
         serializer = ProductLikeSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
     
+    @action(detail=True, methods=['delete'])
+    def delete(self, request, pk=None):
+        if request.user.is_authenticated:
+            queryset = ProductLike.objects.filter(user=request.user, id=pk)
+        else:
+            queryset = ProductLike.objects.filter(session_key=request.session.session_key, id=pk)
+        queryset.delete()
+        return Response(status=204)
+    
     @action(detail=False, methods=['delete'])
     def clear(self, request):
         if request.user.is_authenticated:
