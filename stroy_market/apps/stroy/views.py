@@ -209,6 +209,26 @@ class CartItemViewSet(viewsets.ViewSet):
         serializer = CartItemSerializer(cart_item, context={'request': request})
 
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['delete'])
+    def delete(self, request, pk=None):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user, id=pk)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+        queryset.delete()
+        return Response(status=204)
+    
+    @action(detail=False, methods=['put'])
+    def update(self, request):
+        cart_item_id = request.data.get('cart_item_id')
+        quantity = request.data.get('quantity')
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user, id=cart_item_id)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=cart_item_id)
+        queryset.update(quantity=quantity)
+        return Response(status=204)
 
     @action(detail=False, methods=['delete'])
     def clear(self, request):
