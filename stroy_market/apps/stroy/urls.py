@@ -17,5 +17,6 @@ router.register("newsletters", NewsletterViewSets, basename='newsletters')
 
 
 urlpatterns = [
-    path("", include(router.urls))
+    path("", include(router.urls)),
+    path("cart-items/", CartItemViewSet.as_view({"put": "update_cart",})),
 ]

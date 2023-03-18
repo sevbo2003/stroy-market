@@ -220,7 +220,7 @@ class CartItemViewSet(viewsets.ViewSet):
         return Response(status=204)
     
     @action(detail=False, methods=['put'])
-    def update(self, request):
+    def update_cart(self, request):
         cart_item_id = request.data.get('cart_item_id')
         quantity = request.data.get('quantity')
         if request.user.is_authenticated:
