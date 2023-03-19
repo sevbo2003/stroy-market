@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
 from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer, QuestionSerializer, AnswerSerializer
 from apps.stroy.filters import ProductFilter
+from django.db.models import F
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -228,7 +229,25 @@ class CartItemViewSet(viewsets.ViewSet):
         else:
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=cart_item_id)
         queryset.update(quantity=quantity)
-        return Response(status=204)
+        return Response(status=status.HTTP_202_ACCEPTED)
+    
+    @action(detail=True, methods=['post'])
+    def add_one(self, request, pk=None):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user, id=pk)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+        queryset.update(quantity=F('quantity') + 1)
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['post'])
+    def remove_one(self, request, pk=None):
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user, id=pk)
+        else:
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+        queryset.update(quantity=F('quantity') - 1)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
     @action(detail=False, methods=['delete'])
     def clear(self, request):
