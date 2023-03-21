@@ -326,7 +326,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
                 product=product
             )
         if not created:
-            product_like.delete()
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             product_like.save()
         return Response(status=status.HTTP_200_OK)
