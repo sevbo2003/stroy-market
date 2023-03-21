@@ -175,7 +175,7 @@ class ProductLike(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.product
+        return self.product.name
 
     class Meta:
         verbose_name = _('Saqlangan mahsulot')
