@@ -125,6 +125,13 @@ class CartItemSerializer(serializers.ModelSerializer):
         validated_data['session_key'] = session_key
         return super().create(validated_data)
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['product'] = ProductSerializer(instance.product).data
+        data['price'] = instance.product.price_with_discount * instance.quantity
+        data['image'] = settings.BASE_URL + instance.product.productimage_set.first().image.url
+        return data
+
 
 class ProductLikeSerializer(serializers.ModelSerializer):
     class Meta:
