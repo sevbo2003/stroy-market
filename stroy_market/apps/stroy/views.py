@@ -196,10 +196,7 @@ class CartItemViewSet(viewsets.ViewSet):
                 product_id=product_id,
             )
         else:
-            cart_item, created = CartItem.objects.get_or_create(
-                session_key=request.session.session_key,
-                product_id=product_id,
-            )
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         if not created:
             cart_item.quantity += quantity
         else:
@@ -216,7 +213,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         queryset.delete()
         return Response(status=204)
     
@@ -227,7 +224,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=cart_item_id)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=cart_item_id)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         queryset.update(quantity=quantity)
         return Response(status=status.HTTP_202_ACCEPTED)
     
@@ -236,7 +233,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         queryset.update(quantity=F('quantity') + 1)
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -245,7 +242,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         queryset.update(quantity=F('quantity') - 1)
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -254,49 +251,16 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         queryset.delete()
         return Response(status=204)
-
-    @action(detail=False, methods=['get'])
-    def get_total_price(self, request):
-        if request.user.is_authenticated:
-            queryset = CartItem.objects.filter(user=request.user)
-        else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key)
-        total_price = 0
-        for item in queryset:
-            total_price += item.product.price_with_discount * item.quantity
-        return Response(total_price, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['get'])
-    def get_total_quantity(self, request):
-        if request.user.is_authenticated:
-            queryset = CartItem.objects.filter(user=request.user)
-        else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key)
-        total_quantity = 0
-        for item in queryset:
-            total_quantity += item.quantity
-        return Response(total_quantity, status=status.HTTP_200_OK)
-    
-    @action(detail=False, methods=['get'])
-    def get_total_weight(self, request):
-        if request.user.is_authenticated:
-            queryset = CartItem.objects.filter(user=request.user)
-        else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key)
-        total_weight = 0
-        for item in queryset:
-            total_weight += item.product.weight * item.quantity
-        return Response(total_weight, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
     def get_card_info(self, request):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
-            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
         total_price = 0
         total_quantity = 0
         total_weight = 0
@@ -321,10 +285,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
                 product=product
             )
         else:
-            product_like, created = ProductLike.objects.get_or_create(
-                session_key=request.session.session_key,
-                product=product
-            )
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to like a product'})
         if not created:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -344,7 +305,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user, id=pk)
         else:
-            queryset = ProductLike.objects.filter(session_key=request.session.session_key, id=pk)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to delete from wishlist'})
         queryset.delete()
         return Response(status=204)
     
@@ -353,7 +314,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
         else:
-            queryset = ProductLike.objects.filter(session_key=request.session.session_key)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to delete from wishlist'})
         queryset.delete()
         return Response(status=204)
 
