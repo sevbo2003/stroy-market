@@ -182,6 +182,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key)
         serializer = CartItemSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
@@ -197,6 +201,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.delete()
         return Response(status=204)
@@ -207,6 +215,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.update(quantity=F('quantity') + 1)
         return Response(status=status.HTTP_200_OK)
@@ -216,6 +228,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.update(quantity=F('quantity') - 1)
         return Response(status=status.HTTP_202_ACCEPTED)
@@ -225,6 +241,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
@@ -234,6 +254,10 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key)
         total_price = 0
         total_quantity = 0
@@ -260,6 +284,10 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = ProductLike.objects.filter(session_key=request.session.session_key)
         serializer = ProductLikeSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
@@ -269,6 +297,10 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user, id=pk)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = ProductLike.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.delete()
         return Response(status=204)
@@ -278,6 +310,10 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
         else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
             queryset = ProductLike.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
