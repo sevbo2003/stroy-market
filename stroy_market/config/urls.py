@@ -25,6 +25,8 @@ urlpatterns = [
     path('api/v1/auth/phone-token/', PhoneTokenViewSet.as_view({'post': 'create'}), name='phone_token'),
     path('api/v1/auth/phone-token/verify/', PhoneTokenViewSet.as_view({'post': 'verify'}), name='phone_token_verify'),
     path('api/v1/auth/user/', UserViewSet.as_view({'post': 'create'}), name='user'),
+    path('api/v1/auth/user/me/', UserViewSet.as_view({'get': 'me'}), name='user_me'),
+    path('api/v1/auth/user/reset-password/', UserViewSet.as_view({'post': 'reset_password'}), name='reset_password'),
     path('api/v1/stroy/', include("apps.stroy.urls")),
     path('api/v1/stroy/shipping/', include("apps.stroy.shipping.urls")),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger'),

@@ -37,9 +37,11 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def me(self, request, *args, **kwargs):
         serializer = MyAccountSerializer(request.user)
-        return Response(serializer.data)
-    
-    @action(detail=False, methods=['post'], url_path='me/reset-password')
+        if request.user.is_authenticated:
+            return Response(serializer.data)
+        return Response({'status': 'error'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
     def reset_password(self, request, *args, **kwargs):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
