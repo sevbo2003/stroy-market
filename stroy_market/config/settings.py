@@ -214,16 +214,22 @@ DELIVERY_COST = os.getenv('DELIVERY_COST', 0)
 ESKIZ_EMAIL=os.getenv('ESKIZ_EMAIL')
 ESKIZ_PASSWORD=os.getenv('ESKIZ_PASSWORD')
 
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = False
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
-SESSION_COOKIE_PATH = '/'
-SESSION_SAVE_EVERY_REQUEST = True
-# SESSION_ENGINE = 'apps.authentication.session_manager.CustomSessionStore'
 
 # Application definitions
 
 APP_VERSION = '1.0.0'
 APP_NAME = 'Stroy market'
 APP_DESCRIPTION = 'A RESTfull API for project Stroy market'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://localhost:6379/0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
