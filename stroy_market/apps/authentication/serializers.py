@@ -44,3 +44,33 @@ class PhoneTokenVerifySerializer(serializers.ModelSerializer):
         data = super().validate(attrs)
         validate_uzb_phone_number(data.get('phone_number', None))
         return data
+    
+
+class MyAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'full_name']
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'confirm_password']
+        write_only_fields = ['password', 'confirm_password']
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if data.get('password') != data.get('confirm_password'):
+            raise serializers.ValidationError('Passwords do not match')
+        user = User.objects.filter(username=data.get('username')).first()
+        if not user:
+            raise serializers.ValidationError('User not found')
+        if PhoneToken.objects.filter(phone_number=data.get('username'), is_verified=True).exists():
+            return data
+        raise serializers.ValidationError('Phone number is not verified')
+    
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data.get('password'))
+        instance.save()
+        return instance
+    

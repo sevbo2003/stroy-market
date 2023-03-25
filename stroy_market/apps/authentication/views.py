@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.authentication.models import User, PhoneToken
-from apps.authentication.serializers import UserSerializer, PhoneTokenCreateSerializer, PhoneTokenVerifySerializer
+from apps.authentication.serializers import UserSerializer, PhoneTokenCreateSerializer, PhoneTokenVerifySerializer, MyAccountSerializer, ResetPasswordSerializer
 from apps.authentication.utils import generate_token, verify_token
 from apps.authentication.tasks import send_background_sms
 from apps.authentication.utils import generate_token, verify_token
@@ -15,7 +15,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
-    http_method_names = ['post']
+    http_method_names = ['post', 'get']
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -34,6 +34,18 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'status': 'error', 'message': 'Phone number is not verified'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status': 'error', 'message': 'Phone number is not verified'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['get'])
+    def me(self, request, *args, **kwargs):
+        serializer = MyAccountSerializer(request.user)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], url_path='me/reset-password')
+    def reset_password(self, request, *args, **kwargs):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+    
 
 class PhoneTokenViewSet(viewsets.ModelViewSet):
     queryset = PhoneToken.objects.all()
