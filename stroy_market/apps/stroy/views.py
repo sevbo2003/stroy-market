@@ -277,19 +277,9 @@ class CartItemViewSet(viewsets.ViewSet):
 
 class ProductLikeViewSet(viewsets.ViewSet):
     def create(self, request):
-        product_id = request.data.get('product_id')
-        product = Product.objects.get(id=product_id)
-        if request.user.is_authenticated:
-            product_like, created = ProductLike.objects.get_or_create(
-                user=request.user,
-                product=product
-            )
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to like a product'})
-        if not created:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            product_like.save()
+        serializer = ProductLikeSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(status=status.HTTP_200_OK)
     
     def list(self, request):
@@ -305,7 +295,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user, id=pk)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to delete from wishlist'})
+            queryset = ProductLike.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.delete()
         return Response(status=204)
     
@@ -314,7 +304,7 @@ class ProductLikeViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'You must be logged in to delete from wishlist'})
+            queryset = ProductLike.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
 
