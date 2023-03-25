@@ -116,7 +116,6 @@ class CartItemSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             validated_data['user'] = request.user
             return super().create(validated_data)
-        
         session_key = request.session.session_key
         if not session_key:
             request.session.save()
@@ -137,18 +136,21 @@ class ProductLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLike
         fields = ("id", "user", "session_key", "product")
+        read_only_fields = ("user", "session_key")
     
     def create(self, validated_data):
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
+        if request.user.is_authenticated:
+            if ProductLike.objects.filter(user=request.user, product=validated_data['product']).exists():
+                raise serializers.ValidationError('You have already liked this product')
             validated_data['user'] = request.user
             return super().create(validated_data)
-        
         session_key = request.session.session_key
         if not session_key:
             request.session.save()
             session_key = request.session.session_key
-
+        if ProductLike.objects.filter(session_key=session_key, product=validated_data['product']).exists():
+            raise serializers.ValidationError('You have already liked this product')
         validated_data['session_key'] = session_key
         return super().create(validated_data)
     
@@ -156,6 +158,7 @@ class ProductLikeSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['product'] = ProductSerializer(instance.product).data
         data['image'] = settings.BASE_URL + instance.product.productimage_set.first().image.url
+        data['session_key'] = None
         return data
 
 
