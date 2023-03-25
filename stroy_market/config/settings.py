@@ -214,13 +214,13 @@ DELIVERY_COST = os.getenv('DELIVERY_COST', 0)
 ESKIZ_EMAIL=os.getenv('ESKIZ_EMAIL')
 ESKIZ_PASSWORD=os.getenv('ESKIZ_PASSWORD')
 
-# SESSION_COOKIE_SECURE = True
-# SESSION_COOKIE_HTTPONLY = False
-# SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-# SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
-# SESSION_COOKIE_PATH = '/'
-# SESSION_COOKIE_SECURE = True
-# SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = False
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
+SESSION_COOKIE_PATH = '/'
+SESSION_SAVE_EVERY_REQUEST = True
+# SESSION_ENGINE = 'apps.authentication.session_manager.CustomSessionStore'
 
 # Application definitions
 
