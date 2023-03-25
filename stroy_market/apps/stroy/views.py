@@ -187,62 +187,36 @@ class CartItemViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        product_id = request.data.get('product_id')
-        quantity = request.data.get('quantity')
-
-        if request.user.is_authenticated:
-            cart_item, created = CartItem.objects.get_or_create(
-                user=request.user,
-                product_id=product_id,
-            )
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
-        if not created:
-            cart_item.quantity += quantity
-        else:
-            cart_item.quantity = quantity
-
-        cart_item.save()
-
-        serializer = CartItemSerializer(cart_item, context={'request': request})
-
-        return Response(serializer.data)
+        serializer = CartItemSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['delete'])
     def delete(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.delete()
         return Response(status=204)
     
-    @action(detail=False, methods=['put'])
-    def update_cart(self, request):
-        cart_item_id = request.data.get('cart_item_id')
-        quantity = request.data.get('quantity')
-        if request.user.is_authenticated:
-            queryset = CartItem.objects.filter(user=request.user, id=cart_item_id)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
-        queryset.update(quantity=quantity)
-        return Response(status=status.HTTP_202_ACCEPTED)
     
     @action(detail=True, methods=['post'])
     def add_one(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.update(quantity=F('quantity') + 1)
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def remove_one(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
+            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
         queryset.update(quantity=F('quantity') - 1)
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -251,7 +225,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
 
@@ -260,7 +234,7 @@ class CartItemViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'User is not authenticated'})
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
         total_price = 0
         total_quantity = 0
         total_weight = 0
