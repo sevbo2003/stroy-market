@@ -103,7 +103,6 @@ class CommentLikeSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = serializers.StringRelatedField()
     user = serializers.StringRelatedField()
     quantity = serializers.IntegerField(required=False, default=1)
 
