@@ -109,20 +109,31 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity', 'user', 'date_added']
+        fields = ['id', 'product','session_key', 'quantity', 'user', 'date_added']
+        read_only_fields = ('user', 'session_key', 'date_added')
 
     def create(self, validated_data):
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
+        if request.user.is_authenticated:
             validated_data['user'] = request.user
+            cart_item = CartItem.objects.filter(user=request.user, product=validated_data['product']).last()
+            if cart_item:
+                cart_item.quantity += validated_data['quantity']
+                cart_item.save()
+                return cart_item
             return super().create(validated_data)
         session_key = request.session.session_key
         if not session_key:
             request.session.save()
             session_key = request.session.session_key
-
         validated_data['session_key'] = session_key
+        cart_item = CartItem.objects.filter(session_key=session_key, product=validated_data['product']).last()
+        if cart_item:
+            cart_item.quantity += validated_data['quantity']
+            cart_item.save()
+            return cart_item
         return super().create(validated_data)
+    
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
