@@ -52,15 +52,15 @@ class MyAccountSerializer(serializers.ModelSerializer):
         fields = ['username', 'full_name']
 
 
-class ResetPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password', 'confirm_password']
-        write_only_fields = ['password', 'confirm_password']
+class ResetPasswordSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    password2 = serializers.CharField()
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if data.get('password') != data.get('confirm_password'):
+        validate_uzb_phone_number(data.get('username', None))
+        if data.get('password') != data.get('password2'):
             raise serializers.ValidationError('Passwords do not match')
         user = User.objects.filter(username=data.get('username')).first()
         if not user:
@@ -74,3 +74,9 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+    def create(self, validated_data):
+        username = validated_data.get('username')
+        user = User.objects.filter(username=username).first()
+        user.set_password(validated_data.get('password'))
+        user.save()
+        return user
