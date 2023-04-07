@@ -233,7 +233,7 @@ class CartItemViewSet(viewsets.ViewSet):
                 request.session.create()
                 session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
-        if len(queryset) <= 0:
+        if queryset[0].quantity == 1:
             queryset.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         queryset.update(quantity=F('quantity') - 1)
