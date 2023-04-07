@@ -233,8 +233,11 @@ class CartItemViewSet(viewsets.ViewSet):
                 request.session.create()
                 session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
-        queryset.update(quantity=F('quantity') - 1)
-        return Response(status=status.HTTP_202_ACCEPTED)
+        if queryset[0].quantity == 1:
+            queryset.delete()
+        else:
+            queryset.update(quantity=F('quantity') - 1)
+        return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['delete'])
     def clear(self, request):

@@ -234,5 +234,5 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 # SAVE SESSION IN PRODUCTION
-SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
+# SESSION_COOKIE_DOMAIN = 'backend.stroymarkets.uz'
 SESSION_SAVE_EVERY_REQUEST = True
