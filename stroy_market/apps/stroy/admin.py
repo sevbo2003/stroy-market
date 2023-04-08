@@ -16,7 +16,7 @@ admin.site.register(Category, CategoryAdmin)
 
 
 class SubCategoryAdmin(TranslationAdmin):
-    list_display = ('name', 'slug', 'image', 'category')
+    list_display = ('name', 'slug', 'image', 'category', 'banner', 'width', 'height')
     search_fields = ('name',)
     readonly_fields = ('slug',)
 

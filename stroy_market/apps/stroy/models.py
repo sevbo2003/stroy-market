@@ -34,6 +34,9 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='category')
     slug = models.SlugField(max_length=125, unique=True, blank=True, null=True)
+    banner = models.ImageField(upload_to='category-banners', blank=True, null=True)
+    width = models.IntegerField(default=0)
+    height = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
