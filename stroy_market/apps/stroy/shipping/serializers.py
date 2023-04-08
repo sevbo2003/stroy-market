@@ -48,15 +48,15 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
+        if request.user.is_authenticated:
             validated_data['user'] = request.user
             return super().create(validated_data)
-        
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.save()
+        else:
             session_key = request.session.session_key
-
-        validated_data['session_key'] = session_key
-        return super().create(validated_data)
+            if not session_key:
+                request.session.save()
+                session_key = request.session.session_key
+            validated_data['session_key'] = session_key
+            return super().create(validated_data)
+ 
     
