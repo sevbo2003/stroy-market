@@ -3,7 +3,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, Newsletter
 from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, NewsletterSerializer, QuestionSerializer, AnswerSerializer
 from apps.stroy.filters import ProductFilter
 from django.db.models import F
@@ -327,4 +327,3 @@ class NewsletterViewSets(viewsets.ModelViewSet):
     serializer_class = NewsletterSerializer
     http_method_names = ['post']
     
-
