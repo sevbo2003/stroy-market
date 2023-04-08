@@ -85,15 +85,15 @@ class OrderItemViewSet(viewsets.ModelViewSet):
 class OrderAddressViewSet(viewsets.ModelViewSet):
     queryset = OrderAddress.objects.all()
     serializer_class = OrderAddressSerializer
-    permission_classes = [permissions.IsAdminUser]
     lookup_field = 'id'
 
-    def get_permissions(self):
-        if self.action in ['create', 'retrieve']:
-            permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(order__user=self.request.user)
         else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
+            queryset = queryset.filter(order__session_key=self.request.session.session_key)
+        return queryset
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
