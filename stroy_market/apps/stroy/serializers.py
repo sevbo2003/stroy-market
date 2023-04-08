@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, Newsletter, Question, Answer
 from django.conf import settings
-from django.contrib.sessions.models import Session
-
+from .validators import validate_star_rating
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,6 +69,10 @@ class ProductCommentSerializer(serializers.ModelSerializer):
         model = ProductComment
         fields = ('id', 'product', 'user', 'comment', 'stars', 'created_at')
         read_only_fields = ('user', 'created_at')
+    
+    def validate_stars(self, value):
+        validate_star_rating(value)
+        return value
     
     def to_representation(self, instance):
         data = super().to_representation(instance)

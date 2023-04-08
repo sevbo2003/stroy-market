@@ -119,12 +119,14 @@ class Color(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+# write star validator with 0.5 step
+
 
 class ProductComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    stars = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
+    stars = models.FloatField()
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
