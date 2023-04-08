@@ -185,45 +185,6 @@ class ProductLike(models.Model):
         verbose_name_plural = _('Saqlangan mahsulotlar')
     
 
-class BestProduct(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.product.name
-
-    class Meta:
-        verbose_name = _('Best product')
-        verbose_name_plural = _('Best products')
-        ordering = ('-created_at',)
-
-
-class PopularProduct(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.product.name
-
-    class Meta:
-        verbose_name = _('Popular product')
-        verbose_name_plural = _('Popular products')
-        ordering = ('-created_at',)
-    
-
-class RecommendedProduct(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.product.name
-
-
-    class Meta:
-        verbose_name = _('Recommended produts')
-        verbose_name_plural = _('Recommended products')
-        ordering = ('-created_at',)
-
 class PromoCode(models.Model):
     code = models.CharField(max_length=125)
     discount = models.PositiveIntegerField()
@@ -301,3 +262,4 @@ class Answer(models.Model):
         verbose_name = _('Javob')
         verbose_name_plural = _('Javoblar')
         ordering = ('-created_at',)
+        

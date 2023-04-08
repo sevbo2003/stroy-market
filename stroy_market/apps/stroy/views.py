@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, BestProductSerializer, PopularProductSerializer, NewsletterSerializer, RecommendedProductSerializer, QuestionSerializer, AnswerSerializer
+from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, NewsletterSerializer, QuestionSerializer, AnswerSerializer
 from apps.stroy.filters import ProductFilter
 from django.db.models import F
 
@@ -320,24 +320,6 @@ class ProductLikeViewSet(viewsets.ViewSet):
             queryset = ProductLike.objects.filter(session_key=request.session.session_key)
         queryset.delete()
         return Response(status=204)
-
-
-class BestProductsViewSet(viewsets.ModelViewSet):
-    queryset = BestProduct.objects.all()
-    serializer_class = BestProductSerializer
-    http_method_names = ['get', 'head', 'options']
-
-
-class PopularProductsViewSet(viewsets.ModelViewSet):
-    queryset = PopularProduct.objects.all()
-    serializer_class = PopularProductSerializer
-    http_method_names = ['get', 'head', 'options']
-
-
-class RecommendedProductsViewSet(viewsets.ModelViewSet):
-    queryset = RecommendedProduct.objects.all()
-    serializer_class = RecommendedProductSerializer
-    http_method_names = ['get', 'head', 'options']
 
 
 class NewsletterViewSets(viewsets.ModelViewSet):

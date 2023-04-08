@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, BestProduct, PopularProduct, Newsletter, RecommendedProduct, Question, Answer
+from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, Newsletter, Question, Answer
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
@@ -171,29 +171,6 @@ class ProductLikeSerializer(serializers.ModelSerializer):
         data['session_key'] = None
         return data
 
-
-class BestProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-
-    class Meta:
-        model = BestProduct
-        fields = ('id', 'product', 'created_at')
-
-
-class PopularProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-
-    class Meta:
-        model = PopularProduct
-        fields = ('id', 'product', 'created_at')
-
-
-class RecommendedProductSerializer(serializers.Serializer):
-    product = ProductSerializer()
-
-    class Meta:
-        model = RecommendedProduct
-        fields = ('id', 'product', 'created_at')
 
 class NewsletterSerializer(serializers.ModelSerializer):
     class Meta:
