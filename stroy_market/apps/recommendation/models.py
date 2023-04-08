@@ -22,7 +22,7 @@ class RecommendationProduct(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.recommendation.title} - {self.product.title}'
+        return f'{self.recommendation.title} - {self.product.name}'
     
     class Meta:
         verbose_name = 'Recommendation Product'
