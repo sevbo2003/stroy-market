@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     # Local apps
     'apps.authentication',
     'apps.stroy',
-    'apps.stroy.shipping'
+    'apps.stroy.shipping',
+    'apps.advertisement',
 ]
 
 MIDDLEWARE = [
