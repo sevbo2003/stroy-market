@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.stroy',
     'apps.stroy.shipping',
     'apps.advertisement',
+    'apps.recommendation'
 ]
 
 MIDDLEWARE = [
