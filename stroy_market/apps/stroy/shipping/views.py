@@ -10,7 +10,6 @@ from apps.stroy.shipping.serializers import OrderSerializer, OrderCreateSerializ
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAdminUser]
     http_method_names = ['get', 'post', 'head', 'options']
 
     @action(detail=True, methods=['get'])
@@ -22,11 +21,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def get_permissions(self):
-        if self.action in ['create', 'get_order_items', 'get_order_address', 'retrieve']:
-            permission_classes = [permissions.AllowAny]
-        return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
+        else:
+            if self.request.user.is_authenticated:
+                return Order.objects.filter(user=self.request.user)
+            return Order.objects.filter(session_key=self.request.session.session_key)
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -53,15 +55,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = [permissions.IsAdminUser]
     http_method_names = ['get', 'post', 'head', 'options']
-
-    def get_permissions(self):
-        if self.action in ['retrieve', 'create']:
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
