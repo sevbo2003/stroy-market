@@ -7,6 +7,7 @@ class Banner(models.Model):
     is_active = models.BooleanField(default=True)
     width = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
+    banner_link = models.URLField(blank=True, null=True)
 
 
     def __str__(self):

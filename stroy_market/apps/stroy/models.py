@@ -35,6 +35,7 @@ class SubCategory(models.Model):
     image = models.ImageField(upload_to='category')
     slug = models.SlugField(max_length=125, unique=True, blank=True, null=True)
     banner = models.ImageField(upload_to='category-banners', blank=True, null=True)
+    banner_link = models.URLField(blank=True, null=True)
     width = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
 
