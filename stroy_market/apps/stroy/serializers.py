@@ -100,8 +100,16 @@ class CommentLikeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Like or dislike must be true')
         comment = validated_data.get('comment')
         user = validated_data.get('user')
-        if CommentLike.objects.filter(comment=comment, user=user).exists():
-            raise serializers.ValidationError('You have already liked or disliked this comment')
+        comment_like = CommentLike.objects.filter(comment=comment, user=user).last()
+        if comment_like:
+            if like:
+                comment_like.like = True
+                comment_like.dislike = False
+            else:
+                comment_like.like = False
+                comment_like.dislike = True
+            comment_like.save()
+            return comment_like
         return super().create(validated_data)
 
 

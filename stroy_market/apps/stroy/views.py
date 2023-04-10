@@ -123,14 +123,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def like_comment(self, request, pk=None):
         serializer = CommentLikeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, like=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @action(detail=True, methods=['post'])
-    def dislike_comment(self, request, pk=None):
-        serializer = CommentLikeSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, dislike=True)
+        serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['post'])
