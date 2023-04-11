@@ -254,7 +254,8 @@ class Question(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey('Question', on_delete=models.CASCADE)
     answer = models.TextField()
-    by_admin = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    by_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
