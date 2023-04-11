@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color
+from apps.stroy.models import Product
     
 
 class ProductFilter(filters.FilterSet):
@@ -10,6 +10,7 @@ class ProductFilter(filters.FilterSet):
     expensive = filters.BooleanFilter(method='filter_expensive')
     price_range = filters.RangeFilter(field_name='price')
     in_discount = filters.BooleanFilter(field_name='in_discount')
+    search = filters.CharFilter(method='filter_search', label='Qidiruv')
 
     class Meta:
         model = Product
@@ -39,7 +40,7 @@ class ProductFilter(filters.FilterSet):
             return queryset.order_by('-price')
         return queryset
     
-    # def latest(self, queryset, name, value):
-    #     if value:
-    #         return queryset.order_by('-created_at')
-    #     return queryset
+    def filter_search(self, queryset, name, value):
+        if value:
+            return queryset.filter(name_uz__icontains=value)
+        return queryset
