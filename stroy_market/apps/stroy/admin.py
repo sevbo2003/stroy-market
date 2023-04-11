@@ -119,7 +119,7 @@ admin.site.register(Question, QuestionAdmin)
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('question', 'answer', 'by_admin', 'created_at')
+    list_display = ('question', 'answer', 'user', 'by_admin', 'created_at')
     list_filter = ('question',)
     search_fields = ('answer',)
 
