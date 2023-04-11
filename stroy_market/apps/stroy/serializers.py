@@ -191,10 +191,16 @@ class NewsletterSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    answers = serializers.SerializerMethodField(required=False, read_only=True)
+
     class Meta:
         model = Question
-        fields = ('id', 'user', 'product', 'question', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'product', 'question','answers', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at', 'user', 'product')
+
+    def get_answers(self, obj):
+        answers = Answer.objects.filter(question=obj)
+        return AnswerSerializer(answers, many=True).data
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -203,19 +209,14 @@ class QuestionSerializer(serializers.ModelSerializer):
     
 
 class AnswerSerializer(serializers.ModelSerializer):
+    by_admin = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = Answer
-        fields = ('id', 'question', 'answer', 'created_at', 'updated_at')
-        read_only_fields = ('created_at', 'updated_at', 'question')
+        fields = ('id', 'question', 'answer', 'by_admin', 'created_at', 'updated_at')
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['question'] = instance.question.question
         return data
-    
-    def create(self, validated_data):
-        user = self.context.get('request').user
-        if user.is_superuser:
-            return super().create(validated_data)
-        raise serializers.ValidationError('You are not allowed to answer questions')
     
