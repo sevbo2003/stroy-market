@@ -3,7 +3,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, Newsletter
+from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, Newsletter, Question, Answer
 from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, NewsletterSerializer, QuestionSerializer, AnswerSerializer
 from apps.stroy.filters import ProductFilter
 from django.db.models import F
@@ -147,28 +147,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     def answer_question(self, request, pk=None):
         serializer = AnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(by_admin=request.user, question_id=pk)
+        serializer.save(question_id=pk, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    @action(detail=True, methods=['get'])
-    def get_answers(self, request, pk=None):
-        product = self.get_object()
-        queryset = product.answer_set.all()
-        serializer = AnswerSerializer(queryset, many=True)
-        pagination = self.paginate_queryset(queryset)
-        if pagination is not None:
-            return self.get_paginated_response(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'get_comments', 'get_similar_products', 'get_you_may_like']:
+        if self.request.method == 'GET':
             permission_classes = [permissions.AllowAny]
-        elif self.action in ['add_comment', 'like_comment', 'dislike_comment', 'ask_question']:
-            permission_classes = [permissions.IsAuthenticated]
         else:
-            permission_classes = [permissions.IsAdminUser]
+            permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
-    
 
 class CartItemViewSet(viewsets.ViewSet):
     def list(self, request):
