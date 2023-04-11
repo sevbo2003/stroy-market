@@ -79,8 +79,6 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    product_color = models.ForeignKey(Color, on_delete=models.CASCADE, null=True, blank=True)
-    product_size = models.ForeignKey(Size, on_delete=models.CASCADE, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     class Meta:
