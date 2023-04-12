@@ -30,8 +30,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
-    status = serializers.CharField(required=False)
+    user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
+    status = serializers.CharField(required=False, default='pending', read_only=True)
     promocode = serializers.CharField(required=False)
 
     class Meta:
