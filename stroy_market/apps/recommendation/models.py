@@ -58,3 +58,33 @@ class RecommendationForCartProduct(models.Model):
         verbose_name = 'Savatcha uchun tavsiya mahsulot'
         verbose_name_plural = 'Savatcha uchun tavsiya mahsulot'
         ordering = ['-created_at']
+
+
+class RecommendationForProductDetail(models.Model):
+    title = models.CharField(max_length=255)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        verbose_name = 'Recommendation for product detail'
+        verbose_name_plural = 'Recommendations for product detail'
+        ordering = ['-created_at']
+
+
+class RecommendationForProductDetailProduct(models.Model):
+    recommendation = models.ForeignKey(RecommendationForProductDetail, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.recommendation.title} - {self.product.name}'
+    
+    class Meta:
+        verbose_name = 'Recommendation Product detail product'
+        verbose_name_plural = 'Recommendation Products detail product'
+        ordering = ['-created_at']
