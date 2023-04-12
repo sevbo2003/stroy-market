@@ -15,9 +15,29 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderAddressSerializer(serializers.ModelSerializer):
+    promocode = serializers.CharField(required=False)
+
     class Meta:
         model = OrderAddress
-        fields = ['id','order', 'delivery', 'payment', 'name', 'phone', 'lat', 'lon', 'address', 'comment', 'date']
+        fields = ['id','order', 'delivery', 'payment', 'name', 'phone', 'lat', 'lon', 'address', 'comment', 'date', 'promocode']
+
+    def validate_promocode(self, value):
+        if value:
+            if not PromoCode.objects.filter(code=value).exists():
+                raise serializers.ValidationError('Promocode topilmadi')
+            if not PromoCode.objects.filter(code=value).first().active:
+                raise serializers.ValidationError('Promocodeni aktivlashtirish muddati tugagan')
+        return value
+
+    def create(self, validated_data):
+        promocode = validated_data.pop('promocode')
+        order = Order.objects.get(id=validated_data['order'].id)
+        if promocode:
+            promocode = PromoCode.objects.filter(code=promocode).first()
+            order.promocode = promocode
+            order.save()
+        return super().create(validated_data)
+
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -31,12 +51,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderCreateSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
-    status = serializers.CharField(required=False, default='pending', read_only=True)
-    promocode = serializers.CharField(required=False)
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'status', 'promocode', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'status', 'created_at', 'updated_at')
     
 
     def validate_promocode(self, value):
