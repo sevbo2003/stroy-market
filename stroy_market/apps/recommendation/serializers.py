@@ -4,6 +4,8 @@ from .models import (
     RecommendationProduct,
     RecommentationForCart,
     RecommendationForCartProduct,
+    RecommendationForProductDetail,
+    RecommendationForProductDetailProduct,
 )
 from apps.stroy.serializers import ProductSerializer
 
@@ -42,3 +44,25 @@ class RecommentationForCartSerailizer(serializers.ModelSerializer):
             queryset = RecommendationForCartProduct.objects.filter(recommendation_id=obj.id)
             serializer = RecommentationForCartProductSerializer(queryset, many=True)
             return serializer.data
+
+
+class RecommendationForProductDetailProductSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
+    class Meta:
+        model = RecommendationForProductDetailProduct
+        fields = ('product',)
+
+
+class RecommendationForProductDetailSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecommendationForProductDetail
+        fields = ('id', 'title_uz', 'title_ru', 'products')
+    
+    def get_products(self, obj):
+        queryset = RecommendationForProductDetailProduct.objects.filter(recommendation_id=obj.id)
+        serializer = RecommendationForProductDetailProductSerializer(queryset, many=True)
+        return serializer.data
+    
