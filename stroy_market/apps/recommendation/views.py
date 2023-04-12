@@ -8,12 +8,15 @@ from apps.recommendation.models import (
     RecommendationProduct,
     RecommentationForCart,
     RecommendationForCartProduct,
+    RecommendationForProductDetail,
+    RecommendationForProductDetailProduct,
 )
 from apps.recommendation.serializers import (
     RecommendationSerializer,
     RecommendationProductSerializer,
-    RecommentationForCartProductSerializer,
     RecommentationForCartSerailizer,
+    RecommendationForProductDetailProductSerializer,
+    RecommendationForProductDetailSerializer,
 )
 
 
@@ -39,4 +42,25 @@ class RecommentationForCartViewSet(viewsets.ViewSet):
     def list(self, request):
         item = RecommentationForCart.objects.last()
         serializer = RecommentationForCartSerailizer(item)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RecommendationForProductDetailViewSet(ReadOnlyModelViewSet):
+    queryset = RecommendationForProductDetail.objects.all()
+    serializer_class = RecommendationForProductDetailSerializer
+
+    @action(methods=["get"], detail=True)
+    def products(self, request, pk=None):
+        queryset = RecommendationForProductDetailProduct.objects.filter(
+            recommendation_id=pk
+        )
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            serializer = RecommendationForProductDetailProductSerializer(
+                pagination, many=True
+            )
+            return self.get_paginated_response(serializer.data)
+        serializer = RecommendationForProductDetailProductSerializer(
+            queryset, many=True
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
