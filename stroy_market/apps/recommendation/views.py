@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -31,7 +32,11 @@ class RecommendationViewSet(ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RecommentationForCartViewSet(ReadOnlyModelViewSet):
+class RecommentationForCartViewSet(viewsets.ViewSet):
     queryset = RecommentationForCart.objects.all()
     serializer_class = RecommentationForCartSerailizer
-    pagination_class = None
+
+    def list(self, request):
+        item = RecommentationForCart.objects.last()
+        serializer = RecommentationForCartSerailizer(item)
+        return Response(serializer.data, status=status.HTTP_200_OK)

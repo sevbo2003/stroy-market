@@ -5,9 +5,9 @@ from apps.recommendation.views import RecommendationViewSet, RecommentationForCa
 router = DefaultRouter()
 
 router.register('home-page-recommends', RecommendationViewSet, basename='recommendation')
-router.register('cart', RecommentationForCartViewSet, basename='recommendation-cart')
 
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('cart/', RecommentationForCartViewSet.as_view({'get': 'list'}), name='cart_recommendation'),
 ]
