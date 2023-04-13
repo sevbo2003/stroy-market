@@ -77,5 +77,5 @@ class SpecialOfferSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['image'] = settings.MEDIA_URL + str(data['image'])
+        data['image'] = settings.MEDIA_URL + data['image']
         return data
