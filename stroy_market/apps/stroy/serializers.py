@@ -17,6 +17,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data =  super().to_representation(instance)
         data['image'] = settings.BASE_URL + data['image']
+        return data
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
