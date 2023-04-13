@@ -1,13 +1,19 @@
 from django.contrib import admin
 from apps.stroy.models import Category, SubCategory, Product, ProductImage, Size, Color, ProductComment, CommentLike, CartItem, ProductLike, PromoCode, Newsletter, News, Question, Answer
+from apps.recommendation.models import SpecialOffer
 from modeltranslation.admin import TranslationAdmin
 
 
 class SubCategoryInline(admin.TabularInline):
     model = SubCategory
 
+
+class SpecialOfferInline(admin.TabularInline):
+    model = SpecialOffer
+
+
 class CategoryAdmin(TranslationAdmin):
-    inlines = [SubCategoryInline]
+    inlines = [SubCategoryInline, SpecialOfferInline]
     list_display = ('name_uz', 'name_ru', 'slug', 'image')
     search_fields = ('name',)
     readonly_fields = ('slug',)
