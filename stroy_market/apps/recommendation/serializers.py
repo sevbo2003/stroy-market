@@ -9,7 +9,7 @@ from .models import (
     SpecialOffer,
 )
 from apps.stroy.serializers import ProductSerializer
-
+from django.conf import settings
 
 class RecommendationProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
@@ -74,4 +74,8 @@ class SpecialOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecialOffer
         fields = ('id', 'category', 'product', 'image', 'created_at', 'updated_at')
-        
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image'] = settings.MEDIA_URL + str(data['image'])
+        return data
