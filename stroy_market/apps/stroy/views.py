@@ -3,19 +3,41 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from apps.stroy.models import Category, SubCategory, Product, CartItem, ProductLike, Newsletter, Question, Answer
-from apps.stroy.serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ProductCommentSerializer, CommentLikeSerializer, CartItemSerializer, ProductLikeSerializer, NewsletterSerializer, QuestionSerializer, AnswerSerializer
+from apps.stroy.models import (
+    Category,
+    SubCategory,
+    Product,
+    CartItem,
+    ProductLike,
+    Newsletter,
+    Question,
+    Answer,
+)
+from apps.stroy.serializers import (
+    CategorySerializer,
+    SubCategorySerializer,
+    ProductSerializer,
+    ProductCommentSerializer,
+    CommentLikeSerializer,
+    CartItemSerializer,
+    ProductLikeSerializer,
+    NewsletterSerializer,
+    QuestionSerializer,
+    AnswerSerializer,
+)
 from apps.stroy.filters import ProductFilter
+from apps.recommendation.models import SpecialOffer
+from apps.recommendation.serializers import SpecialOfferSerializer
 from django.db.models import F
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    http_method_names = ['get', 'head', 'options']
-    lookup_field = 'slug'
+    http_method_names = ["get", "head", "options"]
+    lookup_field = "slug"
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def get_subcategories(self, request, slug=None):
         category = self.get_object()
         queryset = category.subcategory_set.all()
@@ -24,8 +46,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['get'])
+
+    @action(detail=True, methods=["get"])
+    def get_special_offers(self, request, slug=None):
+        category = self.get_object()
+        queryset = SpecialOffer.objects.filter(category=category)
+        serializer = SpecialOfferSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
     def get_products(self, request, slug=None):
         instance = self.get_object()
         queryset = Product.objects.filter(category__category__slug=slug)
@@ -35,15 +67,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
+
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
     permission_classes = [permissions.IsAdminUser]
-    http_method_names = ['get', 'head', 'options']
-    lookup_field = 'slug'
+    http_method_names = ["get", "head", "options"]
+    lookup_field = "slug"
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def get_products(self, request, slug=None):
         subcategory = self.get_object()
         queryset = subcategory.product_set.all()
@@ -52,9 +84,9 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def get_permissions(self):
-        if self.action in ['list', 'get_products', 'retrieve']:
+        if self.action in ["list", "get_products", "retrieve"]:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAdminUser]
@@ -65,44 +97,47 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
-    http_method_names = ['post', 'get', 'head', 'options']
+    http_method_names = ["post", "get", "head", "options"]
 
     def retrieve(self, request, *args, **kwargs):
-        saved_products = request.session.get('saved_products', [])
+        saved_products = request.session.get("saved_products", [])
         instance = self.get_object()
         if instance.id not in saved_products:
             instance.views += 1
             instance.save()
             saved_products.append(instance.id)
-            request.session['saved_products'] = saved_products
+            request.session["saved_products"] = saved_products
         serializer = self.get_serializer(instance)
         product_data = serializer.data
-        return Response(
-            product_data,
-            status=status.HTTP_200_OK
-        )
+        return Response(product_data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def get_similar_products(self, request, pk=None):
         product = self.get_object()
-        queryset = Product.objects.filter(category=product.category).exclude(id=product.id)[:6]
-        serializer = ProductSerializer(queryset, many=True)
-        pagination = self.paginate_queryset(queryset)
-        if pagination is not None:
-            return self.get_paginated_response(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['get'])
-    def get_you_may_like(self, request, pk=None):
-        product = self.get_object()
-        queryset = Product.objects.filter(category__category=product.category.category).exclude(id=product.id).order_by('-created_at')[:6]
+        queryset = Product.objects.filter(category=product.category).exclude(
+            id=product.id
+        )[:6]
         serializer = ProductSerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
+    def get_you_may_like(self, request, pk=None):
+        product = self.get_object()
+        queryset = (
+            Product.objects.filter(category__category=product.category.category)
+            .exclude(id=product.id)
+            .order_by("-created_at")[:6]
+        )
+        serializer = ProductSerializer(queryset, many=True)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
     def get_comments(self, request, pk=None):
         product = self.get_object()
         queryset = product.productcomment_set.all()
@@ -111,29 +146,29 @@ class ProductViewSet(viewsets.ModelViewSet):
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['post'])
+
+    @action(detail=True, methods=["post"])
     def add_comment(self, request, pk=None):
         serializer = ProductCommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, product_id=pk)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['post'])
+
+    @action(detail=True, methods=["post"])
     def like_comment(self, request, pk=None):
         serializer = CommentLikeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['post'])
+
+    @action(detail=True, methods=["post"])
     def ask_question(self, request, pk=None):
         serializer = QuestionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, product_id=pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    @action(detail=True, methods=['get'])
+
+    @action(detail=True, methods=["get"])
     def get_questions(self, request, pk=None):
         product = self.get_object()
         queryset = product.question_set.all()
@@ -143,19 +178,20 @@ class ProductViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def answer_question(self, request, pk=None):
         serializer = AnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(question_id=pk, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
+
 
 class CartItemViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -167,16 +203,18 @@ class CartItemViewSet(viewsets.ViewSet):
                 request.session.create()
                 session_key = request.session.session_key
             queryset = CartItem.objects.filter(session_key=request.session.session_key)
-        serializer = CartItemSerializer(queryset, many=True, context={'request': request})
+        serializer = CartItemSerializer(
+            queryset, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = CartItemSerializer(data=request.data, context={'request': request})
+        serializer = CartItemSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['delete'])
+
+    @action(detail=True, methods=["delete"])
     def delete(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
@@ -185,12 +223,13 @@ class CartItemViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+            queryset = CartItem.objects.filter(
+                session_key=request.session.session_key, id=pk
+            )
         queryset.delete()
         return Response(status=204)
-    
-    
-    @action(detail=True, methods=['post'])
+
+    @action(detail=True, methods=["post"])
     def add_one(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
@@ -199,11 +238,13 @@ class CartItemViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
-        queryset.update(quantity=F('quantity') + 1)
+            queryset = CartItem.objects.filter(
+                session_key=request.session.session_key, id=pk
+            )
+        queryset.update(quantity=F("quantity") + 1)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def remove_one(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user, id=pk)
@@ -212,14 +253,16 @@ class CartItemViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = CartItem.objects.filter(session_key=request.session.session_key, id=pk)
+            queryset = CartItem.objects.filter(
+                session_key=request.session.session_key, id=pk
+            )
         if queryset[0].quantity == 1:
             queryset.delete()
         else:
-            queryset.update(quantity=F('quantity') - 1)
+            queryset.update(quantity=F("quantity") - 1)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=["delete"])
     def clear(self, request):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
@@ -232,7 +275,7 @@ class CartItemViewSet(viewsets.ViewSet):
         queryset.delete()
         return Response(status=204)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def get_card_info(self, request):
         if request.user.is_authenticated:
             queryset = CartItem.objects.filter(user=request.user)
@@ -249,20 +292,25 @@ class CartItemViewSet(viewsets.ViewSet):
             total_price += item.product.price_with_discount * item.quantity
             total_quantity += item.quantity
             total_weight += item.product.weight * item.quantity
-        return Response({
-            'total_price': total_price,
-            'total_quantity': total_quantity,
-            'total_weight': total_weight
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "total_price": total_price,
+                "total_quantity": total_quantity,
+                "total_weight": total_weight,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ProductLikeViewSet(viewsets.ViewSet):
     def create(self, request):
-        serializer = ProductLikeSerializer(data=request.data, context={'request': request})
+        serializer = ProductLikeSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_200_OK)
-    
+
     def list(self, request):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
@@ -271,11 +319,15 @@ class ProductLikeViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = ProductLike.objects.filter(session_key=request.session.session_key)
-        serializer = ProductLikeSerializer(queryset, many=True, context={'request': request})
+            queryset = ProductLike.objects.filter(
+                session_key=request.session.session_key
+            )
+        serializer = ProductLikeSerializer(
+            queryset, many=True, context={"request": request}
+        )
         return Response(serializer.data)
-    
-    @action(detail=True, methods=['delete'])
+
+    @action(detail=True, methods=["delete"])
     def delete(self, request, pk=None):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user, id=pk)
@@ -284,11 +336,13 @@ class ProductLikeViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = ProductLike.objects.filter(session_key=request.session.session_key, id=pk)
+            queryset = ProductLike.objects.filter(
+                session_key=request.session.session_key, id=pk
+            )
         queryset.delete()
         return Response(status=204)
-    
-    @action(detail=False, methods=['delete'])
+
+    @action(detail=False, methods=["delete"])
     def clear(self, request):
         if request.user.is_authenticated:
             queryset = ProductLike.objects.filter(user=request.user)
@@ -297,7 +351,9 @@ class ProductLikeViewSet(viewsets.ViewSet):
             if not session_key:
                 request.session.create()
                 session_key = request.session.session_key
-            queryset = ProductLike.objects.filter(session_key=request.session.session_key)
+            queryset = ProductLike.objects.filter(
+                session_key=request.session.session_key
+            )
         queryset.delete()
         return Response(status=204)
 
@@ -305,5 +361,4 @@ class ProductLikeViewSet(viewsets.ViewSet):
 class NewsletterViewSets(viewsets.ModelViewSet):
     queryset = Newsletter.objects.all()
     serializer_class = NewsletterSerializer
-    http_method_names = ['post']
-    
+    http_method_names = ["post"]
