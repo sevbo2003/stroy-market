@@ -6,6 +6,7 @@ from .models import (
     RecommendationForCartProduct,
     RecommendationForProductDetail,
     RecommendationForProductDetailProduct,
+    SpecialOffer,
 )
 from apps.stroy.serializers import ProductSerializer
 
@@ -66,3 +67,11 @@ class RecommendationForProductDetailSerializer(serializers.ModelSerializer):
         serializer = RecommendationForProductDetailProductSerializer(queryset, many=True)
         return serializer.data
     
+
+class SpecialOfferSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
+    class Meta:
+        model = SpecialOffer
+        fields = ('id', 'category', 'product', 'image', 'created_at', 'updated_at')
+        
