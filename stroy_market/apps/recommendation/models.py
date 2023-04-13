@@ -1,5 +1,5 @@
 from django.db import models
-from apps.stroy.models import Product
+from apps.stroy.models import Product, Category
 
 class Recommendation(models.Model):
     title = models.CharField(max_length=255)
@@ -88,3 +88,17 @@ class RecommendationForProductDetailProduct(models.Model):
         verbose_name = 'Recommendation Product detail product'
         verbose_name_plural = 'Recommendation Products detail product'
         ordering = ['-created_at']
+
+
+class SpecialOffer(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='special-offer')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Special offer'
+        verbose_name_plural = 'Special offers'
+        ordering = ['-created_at']
+    
