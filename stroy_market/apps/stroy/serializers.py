@@ -14,6 +14,10 @@ class SubCategorySerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = ('id', 'name_uz', 'name_ru', 'slug', 'image', 'category', 'banner', 'width', 'height', 'banner_link')
 
+    def to_representation(self, instance):
+        data =  super().to_representation(instance)
+        data['image'] = settings.BASE_URL + data['image']
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
