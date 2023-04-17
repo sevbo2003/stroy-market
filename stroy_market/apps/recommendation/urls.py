@@ -4,6 +4,7 @@ from apps.recommendation.views import (
     RecommendationViewSet,
     RecommentationForCartViewSet,
     RecommendationForProductDetailViewSet,
+    RecommendationForCategoryViewSet,
 )
 
 router = DefaultRouter()
@@ -15,6 +16,11 @@ router.register(
     "product-detail-recommends",
     RecommendationForProductDetailViewSet,
     basename="recommendation_for_product_detail",
+)
+router.register(
+    "category-recommends",
+    RecommendationForCategoryViewSet,
+    basename="recommendation_for_category",
 )
 
 
