@@ -6,6 +6,8 @@ from .models import (
     RecommendationForCartProduct,
     RecommendationForProductDetail,
     RecommendationForProductDetailProduct,
+    RecommendationForCategory,
+    RecommendationForCategoryProduct,
 )
 
 
@@ -40,3 +42,14 @@ class RecommendationForProductDetailProductInline(admin.TabularInline):
 class RecommendationForProductDetailAdmin(admin.ModelAdmin):
     list_display = ("title", "product", "created_at", "updated_at")
     inlines = [RecommendationForProductDetailProductInline]
+
+
+class RecommendationForCategoryProductInline(admin.TabularInline):
+    model = RecommendationForCategoryProduct
+    extra = 0
+
+
+@admin.register(RecommendationForCategory)
+class RecommendationForCategoryAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "created_at", "updated_at")
+    inlines = [RecommendationForCategoryProductInline]
