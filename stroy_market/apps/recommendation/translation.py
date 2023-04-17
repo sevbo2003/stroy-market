@@ -1,5 +1,10 @@
 from modeltranslation.translator import translator, TranslationOptions
-from apps.recommendation.models import Recommendation, RecommentationForCart, RecommendationForProductDetail
+from apps.recommendation.models import (
+    Recommendation,
+    RecommentationForCart,
+    RecommendationForProductDetail,
+    RecommendationForCategory,
+)
 
 
 class RecommendationTranslationOptions(TranslationOptions):
@@ -20,4 +25,15 @@ class RecommendationForProductDetailTranslationOptions(TranslationOptions):
     fields = ("title",)
 
 
-translator.register(RecommendationForProductDetail, RecommendationForProductDetailTranslationOptions)
+translator.register(
+    RecommendationForProductDetail, RecommendationForProductDetailTranslationOptions
+)
+
+
+class RecommendationForCategoryTranslationOptions(TranslationOptions):
+    fields = ("title",)
+
+
+translator.register(
+    RecommendationForCategory, RecommendationForCategoryTranslationOptions
+)
