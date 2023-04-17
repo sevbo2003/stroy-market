@@ -101,4 +101,32 @@ class SpecialOffer(models.Model):
         verbose_name = 'Special offer'
         verbose_name_plural = 'Special offers'
         ordering = ['-created_at']
+
+class RecommendationForCategory(models.Model):
+    title = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
     
+    class Meta:
+        verbose_name = 'Recommendation for category'
+        verbose_name_plural = 'Recommendations for categories'
+        ordering = ['-updated_at']
+
+
+class RecommendationForCategoryProduct(models.Model):
+    recommendation = models.ForeignKey(RecommendationForCategory, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.recommendation.title} - {self.product.name}'
+    
+    class Meta:
+        verbose_name = 'Recommendation for category product'
+        verbose_name_plural = 'Recommendation for category products'
+        ordering = ['-created_at']
