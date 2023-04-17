@@ -19,7 +19,7 @@ class OrderAddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderAddress
-        fields = ['id','order', 'delivery', 'payment', 'name', 'phone', 'lat', 'lon', 'address', 'comment', 'date', 'promocode']
+        fields = ['id','order', 'delivery', 'payment', 'name', 'phone', 'lat', 'lon', 'address', 'comment', 'date', 'promocode', 'shipping_date']
 
     def validate_promocode(self, value):
         if value:

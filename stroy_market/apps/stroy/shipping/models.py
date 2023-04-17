@@ -130,6 +130,7 @@ class OrderAddress(models.Model):
     address = models.CharField(max_length=125)
     comment = models.CharField(max_length=125)
     date = models.DateField(auto_now_add=True)
+    shipping_date = models.DateField(null=True, blank=True)
 
     class Meta:
         verbose_name = _('Buyurma manzili')
