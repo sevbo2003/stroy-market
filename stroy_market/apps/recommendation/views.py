@@ -10,6 +10,8 @@ from apps.recommendation.models import (
     RecommendationForCartProduct,
     RecommendationForProductDetail,
     RecommendationForProductDetailProduct,
+    RecommendationForCategory,
+    RecommendationForCategoryProduct,
 )
 from apps.recommendation.serializers import (
     RecommendationSerializer,
@@ -17,6 +19,8 @@ from apps.recommendation.serializers import (
     RecommentationForCartSerailizer,
     RecommendationForProductDetailProductSerializer,
     RecommendationForProductDetailSerializer,
+    RecommendationForCategorySerializer,
+    RecommendationForCategoryProductSerializer,
 )
 
 
@@ -63,4 +67,34 @@ class RecommendationForProductDetailViewSet(ReadOnlyModelViewSet):
         serializer = RecommendationForProductDetailProductSerializer(
             queryset, many=True
         )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RecommendationForCategoryViewSet(ReadOnlyModelViewSet):
+    queryset = RecommendationForCategory.objects.all()
+    serializer_class = RecommendationForCategorySerializer
+
+    def list(self, request):
+        category_id = request.query_params.get("category_id")
+        if category_id:
+            queryset = RecommendationForCategory.objects.filter(category_id=category_id)
+        else:
+            queryset = RecommendationForCategory.objects.all()
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            serializer = RecommendationForCategorySerializer(pagination, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = RecommendationForCategorySerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=True)
+    def products(self, request, pk=None):
+        queryset = RecommendationForCategoryProduct.objects.filter(recommendation_id=pk)
+        pagination = self.paginate_queryset(queryset)
+        if pagination is not None:
+            serializer = RecommendationForCategoryProductSerializer(
+                pagination, many=True
+            )
+            return self.get_paginated_response(serializer.data)
+        serializer = RecommendationForCategoryProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
