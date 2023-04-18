@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from apps.stroy.models import Product, Color, Size
+from apps.stroy.models import Product
 import uuid
 from apps.stroy.models import PromoCode
-
+from django.db.models import Sum, F, FloatField, ExpressionWrapper
 
 User = get_user_model()
 
@@ -98,17 +98,11 @@ class OrderItem(models.Model):
     
     @classmethod
     def total_price(cls, order):
-        total = 0
-        for item in cls.get_order_items(order):
-            total += item.price
-        return total
+        return sum(item.price_with_discount for item in cls.get_order_items(order))
     
     @classmethod
     def total_weight(cls, order):
-        total = 0
-        for item in cls.get_order_items(order):
-            total += item.product.weight
-        return total
+        return sum(item.product.weight * item.quantity for item in cls.get_order_items(order))
 
 
 class OrderAddress(models.Model):
