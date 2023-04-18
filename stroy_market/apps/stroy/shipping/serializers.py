@@ -54,7 +54,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'status', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'created_at', 'updated_at')
     
 
     def validate_promocode(self, value):
