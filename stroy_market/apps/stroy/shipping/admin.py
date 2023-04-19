@@ -13,7 +13,7 @@ class OrderAddressInline(admin.TabularInline):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'status', 'created_at', 'updated_at')
+    list_display = ('id', 'user', 'status', 'promocode', 'created_at', 'updated_at', 'get_total_weight', )
     list_filter = ('status',)
     inlines = [OrderItemInline, OrderAddressInline]
 

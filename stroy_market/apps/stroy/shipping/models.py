@@ -29,6 +29,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = _('Buyurtma')
         verbose_name_plural = _('Buyurtmalar')
+        ordering = ('-updated_at',)
 
     def __str__(self):
         return f'Buyurtma {self.pk}'
@@ -41,6 +42,7 @@ class Order(models.Model):
                     price = self.orderitem_set.first().total_price(self)
                     if self.promocode:
                         return price - (price * self.promocode.discount / 100)
+                    return price
                 else:
                     price = self.orderitem_set.first().total_price(self) + int(settings.DELIVERY_COST)
                     if self.promocode:
@@ -48,6 +50,7 @@ class Order(models.Model):
             price = self.orderitem_set.first().total_price(self)
             if self.promocode:
                 return price - (price * self.promocode.discount / 100)
+            return price
         return None
     
     @property
@@ -98,7 +101,7 @@ class OrderItem(models.Model):
     
     @classmethod
     def total_price(cls, order):
-        return sum(item.price_with_discount for item in cls.get_order_items(order))
+        return sum(item.product.price_with_discount * item.quantity for item in cls.get_order_items(order))
     
     @classmethod
     def total_weight(cls, order):
@@ -124,7 +127,7 @@ class OrderAddress(models.Model):
     address = models.CharField(max_length=125)
     comment = models.CharField(max_length=125)
     date = models.DateField(auto_now_add=True)
-    shipping_date = models.DateField(null=True, blank=True)
+    shipping_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = _('Buyurma manzili')
