@@ -11,7 +11,7 @@ User = get_user_model()
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('id', 'order', 'product', 'quantity', 'price')
+        fields = ("id", "order", "product", "quantity", "price")
 
 
 class OrderAddressSerializer(serializers.ModelSerializer):
@@ -19,25 +19,40 @@ class OrderAddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderAddress
-        fields = ['id','order', 'delivery', 'payment', 'name', 'phone', 'lat', 'lon', 'address', 'comment', 'date', 'promocode', 'shipping_date']
+        fields = [
+            "id",
+            "order",
+            "delivery",
+            "payment",
+            "name",
+            "phone",
+            "lat",
+            "lon",
+            "address",
+            "comment",
+            "date",
+            "promocode",
+            "shipping_date",
+        ]
 
     def validate_promocode(self, value):
         if value:
             if not PromoCode.objects.filter(code=value).exists():
-                raise serializers.ValidationError('Promocode topilmadi')
+                raise serializers.ValidationError("Promocode topilmadi")
             if not PromoCode.objects.filter(code=value).first().active:
-                raise serializers.ValidationError('Promocodeni aktivlashtirish muddati tugagan')
+                raise serializers.ValidationError(
+                    "Promocodeni aktivlashtirish muddati tugagan"
+                )
         return value
 
     def create(self, validated_data):
-        promocode = validated_data.pop('promocode')
-        order = Order.objects.get(id=validated_data['order'].id)
+        promocode = validated_data.pop("promocode")
+        order = Order.objects.get(id=validated_data["order"].id)
         if promocode:
             promocode = PromoCode.objects.filter(code=promocode).first()
             order.promocode = promocode
             order.save()
         return super().create(validated_data)
-
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -46,7 +61,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'status', 'created_at', 'updated_at', 'order_items', 'order_address', 'get_total_price', 'get_total_weight')
+        fields = (
+            "id",
+            "user",
+            "status",
+            "created_at",
+            "updated_at",
+            "order_items",
+            "order_address",
+            "get_total_price",
+            "get_total_weight",
+        )
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
@@ -54,38 +79,53 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'created_at', 'updated_at')
-    
+        fields = ("id", "user", "created_at", "updated_at")
 
     def validate_promocode(self, value):
         if value:
             if not PromoCode.objects.filter(code=value).exists():
-                raise serializers.ValidationError('Promocode topilmadi')
+                raise serializers.ValidationError("Promocode topilmadi")
             if not PromoCode.objects.filter(code=value).first().active:
-                raise serializers.ValidationError('Promocodeni aktivlashtirish muddati tugagan')
+                raise serializers.ValidationError(
+                    "Promocodeni aktivlashtirish muddati tugagan"
+                )
         return value
-    
+
     def create(self, validated_data):
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request.user.is_authenticated:
-            validated_data['user'] = request.user
+            validated_data["user"] = request.user
             data = super().create(validated_data)
             cart_items = CartItem.objects.filter(user=request.user)
-            OrderItem.objects.bulk_create([
-                OrderItem(order=data, product=item.product, quantity=item.quantity, price=item.product.price) for item in cart_items
-            ])
+            OrderItem.objects.bulk_create(
+                [
+                    OrderItem(
+                        order=data,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price=item.product.price,
+                    )
+                    for item in cart_items
+                ]
+            )
             return data
         else:
             session_key = request.session.session_key
             if not session_key:
                 request.session.save()
                 session_key = request.session.session_key
-            validated_data['session_key'] = session_key
-            data =  super().create(validated_data)
+            validated_data["session_key"] = session_key
+            data = super().create(validated_data)
             cart_items = CartItem.objects.filter(session_key=session_key)
-            OrderItem.objects.bulk_create([
-                OrderItem(order=data, product=item.product, quantity=item.quantity, price=item.product.price) for item in cart_items
-            ])
+            OrderItem.objects.bulk_create(
+                [
+                    OrderItem(
+                        order=data,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price=item.product.price_with_discount * item.quantity,
+                    )
+                    for item in cart_items
+                ]
+            )
             return data
- 
-    
