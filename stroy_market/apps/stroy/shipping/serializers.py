@@ -129,3 +129,17 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 ]
             )
             return data
+
+
+class CheckPromocodeSerializer(serializers.Serializer):
+    promocode = serializers.CharField()
+
+    def validate_promocode(self, value):
+        if value:
+            if not PromoCode.objects.filter(code=value).exists():
+                raise serializers.ValidationError("Promocode topilmadi")
+            if not PromoCode.objects.filter(code=value).first().active:
+                raise serializers.ValidationError(
+                    "Promocodeni aktivlashtirish muddati tugagan"
+                )
+        return value
