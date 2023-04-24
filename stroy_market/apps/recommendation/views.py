@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
+from apps.stroy.models import Product
 from apps.recommendation.models import (
     Recommendation,
     RecommendationProduct,
@@ -53,20 +54,18 @@ class RecommendationForProductDetailViewSet(ReadOnlyModelViewSet):
     queryset = RecommendationForProductDetail.objects.all()
     serializer_class = RecommendationForProductDetailSerializer
 
+    def list(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     @action(methods=["get"], detail=True)
     def products(self, request, pk=None):
-        queryset = RecommendationForProductDetailProduct.objects.filter(
-            recommendation_id=pk
-        )
+        id = Product.objects.get(pk=pk)
+        queryset = RecommendationForProductDetail.objects.filter(product_id=id).order_by("-id")
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
-            serializer = RecommendationForProductDetailProductSerializer(
-                pagination, many=True
-            )
+            serializer = RecommendationForProductDetailSerializer(pagination, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = RecommendationForProductDetailProductSerializer(
-            queryset, many=True
-        )
+        serializer = RecommendationForProductDetailProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
