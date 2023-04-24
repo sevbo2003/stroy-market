@@ -55,6 +55,17 @@ class OrderAddressSerializer(serializers.ModelSerializer):
             promocode = PromoCode.objects.filter(code=promocode).first()
             order.promocode = promocode
             order.save()
+            
+        request = self.context.get("request")
+        if request.user.is_authenticated:
+            queryset = CartItem.objects.filter(user=request.user)
+        else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
+            queryset = CartItem.objects.filter(session_key=request.session.session_key)
+        queryset.delete()
         return super().create(validated_data)
 
 
