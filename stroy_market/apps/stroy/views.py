@@ -182,7 +182,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def answer_question(self, request, pk=None):
         serializer = AnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(question_id=pk, user=request.user)
+        serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_permissions(self):
