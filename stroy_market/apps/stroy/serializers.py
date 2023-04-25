@@ -215,10 +215,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class AnswerSerializer(serializers.ModelSerializer):
     by_admin = serializers.BooleanField(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Answer
-        fields = ('id', 'question', 'answer', 'by_admin', 'created_at', 'updated_at')
+        fields = ('id', 'question', 'answer', 'user', 'by_admin', 'created_at', 'updated_at')
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
