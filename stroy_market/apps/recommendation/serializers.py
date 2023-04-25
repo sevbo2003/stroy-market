@@ -96,8 +96,6 @@ class RecommendationForCategoryProductSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # data["product"]["image"] = settings.MEDIA_URL + data["product"]["image"]
-        print(data)
         return data
 
 
