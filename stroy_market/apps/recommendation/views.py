@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from apps.stroy.models import Product
+from apps.stroy.filters import ProductFilter
 from apps.recommendation.models import (
     Recommendation,
     RecommendationProduct,

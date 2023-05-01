@@ -173,7 +173,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = self.get_object()
         q_id = request.query_params.get("q_id", None)
         if q_id is not None:
-            queryset = product.question_set.filter(id=q_id)
+            queryset = product.question_set.filter(id=q_id).last()
+            serializer = QuestionSerializer(queryset)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             queryset = product.question_set.all()
         serializer = QuestionSerializer(queryset, many=True)
