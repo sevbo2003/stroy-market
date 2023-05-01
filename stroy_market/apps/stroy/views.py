@@ -171,7 +171,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def get_questions(self, request, pk=None):
         product = self.get_object()
-        queryset = product.question_set.all()
+        q_id = request.query_params.get("q_id", None)
+        if q_id is not None:
+            queryset = product.question_set.filter(id=q_id)
+        else:
+            queryset = product.question_set.all()
         serializer = QuestionSerializer(queryset, many=True)
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
