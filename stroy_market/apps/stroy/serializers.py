@@ -75,7 +75,7 @@ class ProductCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductComment
         fields = ('id', 'product', 'user', 'comment', 'stars', 'created_at', 'likes_count', 'dislikes_count', 'user_liked_or_disliked_or_not')
-        read_only_fields = ('user', 'created_at', 'user_liked_or_disliked_or_not')
+        read_only_fields = ('user', 'created_at', 'user_liked_or_disliked_or_not', 'likes_count', 'dislikes_count')
 
     
     def get_user_liked_or_disliked_or_not(self, obj):
