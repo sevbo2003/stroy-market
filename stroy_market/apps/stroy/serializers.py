@@ -70,10 +70,25 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):
+    user_liked_or_disliked_or_not = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductComment
-        fields = ('id', 'product', 'user', 'comment', 'stars', 'created_at')
-        read_only_fields = ('user', 'created_at')
+        fields = ('id', 'product', 'user', 'comment', 'stars', 'created_at', 'likes_count', 'dislikes_count', 'user_liked_or_disliked_or_not')
+        read_only_fields = ('user', 'created_at', 'user_liked_or_disliked_or_not')
+
+    
+    def get_user_liked_or_disliked_or_not(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        if request.user.is_authenticated:
+            if user in obj.likes.all():
+                return 'like'
+            elif user in obj.dislikes.all():
+                return 'dislike'
+            else:
+                return 'none'
+        return 'none'
     
     def validate_stars(self, value):
         validate_star_rating(value)

@@ -128,6 +128,8 @@ class ProductComment(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     stars = models.FloatField()
     comment = models.TextField()
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, null=True)
+    dislikes = models.ManyToManyField(User, related_name='dislikes', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -140,6 +142,14 @@ class ProductComment(models.Model):
         product.comments += 1
         product.save()
         super(ProductComment, self).save(*args, **kwargs)
+    
+    @property
+    def likes_count(self):
+        return self.likes.count()
+
+    @property
+    def dislikes_count(self):
+        return self.dislikes.count()
 
     class Meta:
         ordering = ('-created_at',)
