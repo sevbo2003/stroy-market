@@ -125,7 +125,7 @@ class OrderAddress(models.Model):
     lat = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     lon = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     address = models.CharField(max_length=125)
-    comment = models.CharField(max_length=125)
+    comment = models.CharField(max_length=125, null=True, blank=True)
     date = models.DateField(auto_now_add=True)
     shipping_date = models.DateTimeField(null=True, blank=True)
 
