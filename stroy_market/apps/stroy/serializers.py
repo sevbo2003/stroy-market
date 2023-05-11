@@ -121,6 +121,27 @@ class CommentLikeSerializer(serializers.Serializer):
                 comment.likes.add(request.user)
                 return comment
         return comment
+
+
+class CommentDislikeSerializer(serializers.Serializer):
+    comment = serializers.PrimaryKeyRelatedField(queryset=ProductComment.objects.all(), required=True)
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        comment = validated_data['comment']
+
+        if request.user.is_authenticated:
+            if request.user in comment.dislikes.all():
+                comment.dislikes.remove(request.user)
+                return comment
+            elif request.user in comment.likes.all():
+                comment.likes.remove(request.user)
+                comment.dislikes.add(request.user)
+                return comment
+            else:
+                comment.dislikes.add(request.user)
+                return comment
+        return comment
  
 
 class CartItemSerializer(serializers.ModelSerializer):
