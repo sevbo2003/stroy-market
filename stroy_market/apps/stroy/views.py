@@ -141,7 +141,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_comments(self, request, pk=None):
         product = self.get_object()
         queryset = product.productcomment_set.all()
-        serializer = ProductCommentSerializer(queryset, many=True)
+        serializer = ProductCommentSerializer(queryset, many=True, context={"request": request})
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             return self.get_paginated_response(serializer.data)
@@ -156,9 +156,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def like_comment(self, request, pk=None):
-        serializer = CommentLikeSerializer(data=request.data)
+        serializer = CommentLikeSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["post"])
