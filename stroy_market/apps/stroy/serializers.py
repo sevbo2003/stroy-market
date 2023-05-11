@@ -97,41 +97,31 @@ class ProductCommentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['user'] = instance.user.full_name
-        data['likes'] = instance.commentlike_set.filter(like=True).count()
-        data['dislikes'] = instance.commentlike_set.filter(dislike=True).count()
         return data
     
 
-class CommentLikeSerializer(serializers.ModelSerializer):
-    like = serializers.BooleanField(required=False)
-    dislike = serializers.BooleanField(required=False)
-
-    class Meta:
-        model = CommentLike
-        fields = ('id', 'comment', 'user', 'like', 'dislike')
-        read_only_fields = ('user', 'created_at')
+class CommentLikeSerializer(serializers.Serializer):
+    comment = serializers.PrimaryKeyRelatedField(queryset=ProductComment.objects.all(), required=True)
 
     def create(self, validated_data):
-        like = validated_data.get('like', None)
-        dislike = validated_data.get('dislike', None)
-        if like and dislike:
-            raise serializers.ValidationError('Like and dislike can not be true at the same time')
-        if not like and not dislike:
-            raise serializers.ValidationError('Like or dislike must be true')
-        comment = validated_data.get('comment')
-        user = validated_data.get('user')
-        comment_like = CommentLike.objects.filter(comment=comment, user=user).last()
-        if comment_like:
-            if like:
-                comment_like.like = True
-                comment_like.dislike = False
-            else:
-                comment_like.like = False
-                comment_like.dislike = True
-            comment_like.save()
-            return comment_like
-        return super().create(validated_data)
+        request = self.context.get('request')
+        comment = validated_data['comment']
 
+        if request.user.is_authenticated:
+            print("Came here auth___________")
+            if request.user in comment.likes.all():
+                print("Came here liked___________")
+                comment.likes.remove(request.user)
+                return comment
+            elif request.user in comment.dislikes.all():
+                comment.dislikes.remove(request.user)
+                comment.likes.add(request.user)
+                return comment
+            else:
+                comment.likes.add(request.user)
+                return comment
+        return comment
+ 
 
 class CartItemSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
