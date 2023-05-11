@@ -24,6 +24,7 @@ from apps.stroy.serializers import (
     NewsletterSerializer,
     QuestionSerializer,
     AnswerSerializer,
+    CommentDislikeSerializer
 )
 from apps.stroy.filters import ProductFilter
 from apps.recommendation.models import SpecialOffer
@@ -157,6 +158,13 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def like_comment(self, request, pk=None):
         serializer = CommentLikeSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["post"])
+    def dislike_comment(self, request, pk=None):
+        serializer = CommentDislikeSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
